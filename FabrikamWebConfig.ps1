@@ -1,8 +1,7 @@
 Configuration FabrikamWebConfig
 {
-  param ($MachineName)
 
-  Node $MachineName
+  Node WebServer
   {
     WindowsFeature IIS
     {
