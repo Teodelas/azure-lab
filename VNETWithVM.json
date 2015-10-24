@@ -1,0 +1,137 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+      "ResourceLocation": {
+          "type": "string",
+          "defaultValue": "West US",
+          "allowedValues": [
+              "East US",
+              "West US",
+              "West Europe",
+              "East Asia",
+              "South East Asia"
+          ]
+      },
+      "StorageAccountName": {
+          "type": "string"
+      }
+  },
+  "variables": {
+  
+  },
+  "resources": [
+      {
+          "name": "DemoNetwork",
+          "type": "Microsoft.Network/virtualNetworks",
+          "location": "[parameters('ResourceLocation')]",
+          "apiVersion": "2015-05-01-preview",
+          "dependsOn": [ ],
+          "tags": {
+              "displayName": "VirtualNetwork"
+          },
+          "properties": {
+              "addressSpace": {
+                  "addressPrefixes": [
+                      "10.0.0.0/16"
+                  ]
+              },
+              "subnets": [
+                  {
+                      "name": "Apps",
+                      "properties": {
+                          "addressPrefix": "10.0.0.0/24"
+                      }
+                  }
+              ]
+          }
+      },
+      {
+          "name": "[parameters('StorageAccountName')]",
+          "type": "Microsoft.Storage/storageAccounts",
+          "location": "[parameters('ResourceLocation')]",
+          "apiVersion": "2015-05-01-preview",
+          "dependsOn": [ ],
+          "tags": {
+              "displayName": "StorageAccount"
+          },
+          "properties": {
+              "accountType": "Standard_LRS"
+          }
+      },
+      {
+          "name": "VirtualMachineNetworkInterface",
+          "type": "Microsoft.Network/networkInterfaces",
+          "location": "[parameters('ResourceLocation')]",
+          "apiVersion": "2015-05-01-preview",
+          "dependsOn": [
+              "[concat('Microsoft.Network/virtualNetworks/', 'DemoNetwork')]"
+          ],
+          "tags": {
+              "displayName": "VirtualMachineNic"
+          },
+          "properties": {
+              "ipConfigurations": [
+                  {
+                      "name": "IPConfig",
+                      "properties": {
+                          "privateIPAllocationMethod": "Dynamic",
+                        "subnet": {
+                          "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', 'DemoNetwork'), '/subnets/Apps')]"
+                        }
+                      }
+                  }
+              ]
+          }
+      },
+      {
+          "name": "PrimaryVM",
+          "type": "Microsoft.Compute/virtualMachines",
+          "location": "[parameters('ResourceLocation')]",
+          "apiVersion": "2015-05-01-preview",
+          "dependsOn": [
+              "[concat('Microsoft.Storage/storageAccounts/', parameters('StorageAccountName'))]",
+              "Microsoft.Network/networkInterfaces/VirtualMachineNetworkInterface"
+          ],
+          "tags": {
+              "displayName": "VirtualMachine"
+          },
+          "properties": {
+              "hardwareProfile": {
+                  "vmSize": "Standard_D1"
+              },
+              "osProfile": {
+                  "computerName": "PrimaryVM",
+                  "adminUsername": "Attendee",
+                  "adminPassword": "1stAzure"
+              },
+              "storageProfile": {
+                  "imageReference": {
+                      "publisher": "MicrosoftWindowsServer",
+                      "offer": "WindowsServer",
+                      "sku": "2012-R2-Datacenter",
+                      "version": "latest"
+                  },
+                  "osDisk": {
+                      "name": "VirtualMachineOSDisk",
+                      "vhd": {
+                          "uri": "[concat('http://', parameters('StorageAccountName'), '.blob.core.windows.net/vhds/VirtualMachineOSDisk.vhd')]"
+                      },
+                      "caching": "ReadWrite",
+                      "createOption": "FromImage"
+                  }
+              },
+              "networkProfile": {
+                  "networkInterfaces": [
+                      {
+                          "id": "[resourceId('Microsoft.Network/networkInterfaces', 'VirtualMachineNetworkInterface')]"
+                      }
+                  ]
+              }
+          }
+      }
+
+  ],
+  "outputs": {
+  }
+}
