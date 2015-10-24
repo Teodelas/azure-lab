@@ -2,23 +2,28 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-      "ResourceLocation": {
-          "type": "string",
-          "defaultValue": "West US",
-          "allowedValues": [
-              "East US",
-              "West US",
-              "West Europe",
-              "East Asia",
-              "South East Asia"
-          ]
-      },
-      "StorageAccountName": {
-          "type": "string"
-      }
+    "ResourceLocation": {
+      "type": "string",
+      "defaultValue": "West US",
+      "allowedValues": [
+        "East US",
+        "West US",
+        "West Europe",
+        "East Asia",
+        "South East Asia"
+      ]
+    },
+    "StorageAccountName": {
+      "type": "string"
+    },
+    "OtherResourcesPrefix": {
+      "type": "string"
+    }
+
   },
   "variables": {
-  
+    "publicIPAddressType": "Dynamic",
+    "publicIPAddressName": "[concat(parameters('OtherResourcesPrefix'), 'PIP')]"
   },
   "resources": [
       {
@@ -46,18 +51,26 @@
               ]
           }
       },
-      {
-          "name": "[parameters('StorageAccountName')]",
-          "type": "Microsoft.Storage/storageAccounts",
-          "location": "[parameters('ResourceLocation')]",
-          "apiVersion": "2015-05-01-preview",
-          "dependsOn": [ ],
-          "tags": {
-              "displayName": "StorageAccount"
-          },
-          "properties": {
-              "accountType": "Standard_LRS"
-          }
+    {
+      "name": "[parameters('StorageAccountName')]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "location": "[parameters('ResourceLocation')]",
+      "apiVersion": "2015-05-01-preview",
+      "dependsOn": [ ],
+      "tags": {
+        "displayName": "StorageAccount"
+      },
+      "properties": {
+        "accountType": "Standard_LRS"
+      }
+    },
+     {
+      "apiVersion": "2015-05-01-preview",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('publicIPAddressName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publicIPAllocationMethod": "[variables('publicIPAddressType')]"
       },
       {
           "name": "VirtualMachineNetworkInterface",
@@ -65,7 +78,8 @@
           "location": "[parameters('ResourceLocation')]",
           "apiVersion": "2015-05-01-preview",
           "dependsOn": [
-              "[concat('Microsoft.Network/virtualNetworks/', 'DemoNetwork')]"
+            "[concat('Microsoft.Network/virtualNetworks/', 'DemoNetwork')]",
+            "[concat('Microsoft.Network/publicIPAddresses/',variables('publicIPAddressName'))]"
           ],
           "tags": {
               "displayName": "VirtualMachineNic"
@@ -75,7 +89,10 @@
                   {
                       "name": "IPConfig",
                       "properties": {
-                          "privateIPAllocationMethod": "Dynamic",
+                      "privateIPAllocationMethod": "Dynamic",
+                      "publicIPAddress": {
+                          "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]"
+                         },
                         "subnet": {
                           "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', 'DemoNetwork'), '/subnets/Apps')]"
                         }
