@@ -261,9 +261,11 @@
             }
           ]
         },
-        "protectedSettings": {
-          "item": "[parameters('DSCAccessKey')]"
-        }
+            "protectedSettings": {
+                "Items": {
+                    "registrationKeyPrivate": "[parameters('DSCAccessKey')]"
+                }
+            }
       }
     }
 
