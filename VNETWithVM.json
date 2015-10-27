@@ -4,7 +4,7 @@
   "parameters": {
     "ResourceLocation": {
       "type": "string",
-      "defaultValue": "West US",
+      "defaultValue": "East US",
       "allowedValues": [
         "East US",
         "West US",
@@ -68,7 +68,7 @@
       "apiVersion": "2015-05-01-preview",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[variables('publicIPAddressName')]",
-      "location": "[resourceGroup().location]",
+      "location": "[parameters('ResourceLocation')]",
       "properties": {
         "publicIPAllocationMethod": "[variables('publicIPAddressType')]"
       }
