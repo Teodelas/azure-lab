@@ -178,6 +178,21 @@
       }
     },
     {
+        "type": "Microsoft.Compute/virtualMachines/extensions",
+        "name": "PrimaryVM/BGInfo",
+        "dependsOn": [
+        "Microsoft.Compute/virtualMachines/PrimaryVM"
+        ],
+        "apiVersion": "2015-06-15",
+        "location": "eastus",
+      "properties": {
+        "publisher": "Microsoft.Compute",
+        "type": "BGInfo",
+        "typeHandlerVersion": "2.1",
+        "autoUpgradeMinorVersion": true
+      }
+    },
+    {
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "PrimaryVM/MicrosoftMonitoringAgent",
       "dependsOn": [
