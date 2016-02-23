@@ -7,10 +7,7 @@
       "defaultValue": "East US",
       "allowedValues": [
         "East US",
-        "West US",
-        "West Europe",
-        "East Asia",
-        "South East Asia"
+        "West US"
       ]
     },
     "StorageAccountName": {
