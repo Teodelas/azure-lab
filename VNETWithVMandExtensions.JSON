@@ -7,10 +7,7 @@
       "defaultValue": "East US",
       "allowedValues": [
         "East US",
-        "West US",
-        "West Europe",
-        "East Asia",
-        "South East Asia"
+        "West US"
       ]
     },
     "StorageAccountName": {
@@ -149,8 +146,8 @@
         },
         "osProfile": {
           "computerName": "PrimaryVM",
-          "adminUsername": "Attendee",
-          "adminPassword": "1stAzure"
+          "adminUsername": "demouser",
+          "adminPassword": "demo@pass1"
         },
         "storageProfile": {
           "imageReference": {
