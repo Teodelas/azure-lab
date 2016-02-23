@@ -120,8 +120,8 @@
         },
         "osProfile": {
           "computerName": "PrimaryVM",
-          "adminUsername": "Attendee",
-          "adminPassword": "1stAzure"
+          "adminUsername": "demouser",
+          "adminPassword": "demo@pass1"
         },
         "storageProfile": {
           "imageReference": {
