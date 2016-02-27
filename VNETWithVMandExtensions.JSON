@@ -232,7 +232,7 @@
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "PrimaryVM/dscExtension",
-      "apiVersion": "2015-05-01-preview",
+      "apiVersion": "2015-06-15",
       "location": "[parameters('ResourceLocation')]",
       "dependsOn": [
         "Microsoft.Compute/virtualMachines/PrimaryVM"
@@ -240,7 +240,7 @@
       "properties": {
         "publisher": "Microsoft.Powershell",
         "type": "DSC",
-        "typeHandlerVersion": "2.13",
+        "typeHandlerVersion": "2.14",
         "protectedSettings": {
           "Items": {
                   "registrationKeyPrivate": "[parameters('DSCAccessKey')]"
