@@ -11,27 +11,33 @@
       ]
     },
     "StorageAccountName": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": ""
     },
     "OtherResourcesPrefix": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "rgdemo"
     },
 
     "AOIWorkspaceID": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "42d25624-0f7b-4389-b9f0-eb8198b2ff41"
     },
     "AOIWorkspaceKey": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "KtaJ2JWS8uQ75NsYy/TaG/Z7LHOw4jwElmiboZh63GAfVJCLhh7NNlTSE6zpR38GiH1UZFSvhqi13hzHMogMBg=="
     },
     "DSCregistrationUrl": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "https://eus2-agentservice-prod-1.azure-automation.net/accounts/26a3b072-6033-4c7f-8859-aabb71815987"
     },
     "DSCAccessKey": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "weG7gZDN4072Zwh7j85XHrvYgHdPpTy5Ifi22TIt9dQPAwmNwndDEpAluIwq6nEhH4/RBO3iP094+KDnzbOTSQ=="
     },
     "DSCnodeConfigurationName": {
       "type": "string",
-      "defaultValue": "ex: Configuration.Node"
+      "defaultValue": "FabrikamWebConfig.WebServer"
     },
     "timestamp": {
       "type": "string",
