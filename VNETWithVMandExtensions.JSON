@@ -203,7 +203,7 @@
        	           "type": "CustomScriptExtension",
                      "typeHandlerVersion": "1.2",
                      "settings": {
-                         "fileUris": "",
+                         "fileUris": "https://raw.githubusercontent.com/Teodelas/azure-lab/master/demo.ps1",
        	                  "commandToExecute": "powershell -command update-dscconfiguration"
                      }
                  }
