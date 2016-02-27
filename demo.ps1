@@ -1,1 +1,2 @@
-Write-Output "file ran successfully"
+update-dscconfiguration
+
