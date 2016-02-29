@@ -197,24 +197,6 @@
       }
     },
     {
-                  "type": "Microsoft.Compute/virtualMachines/extensions",
-                  "name": "[concat(variables('vmName'),'/CustomScriptExtension')]",
-                  "apiVersion": "2015-05-01-preview",
-                  "location": "[resourceGroup().location]",
-                  "dependsOn": [
-                    "Microsoft.Compute/virtualMachines/PrimaryVM"
-                  ],
-                  "properties": {
-       	           "publisher": "Microsoft.Compute",
-       	           "type": "CustomScriptExtension",
-                     "typeHandlerVersion": "1.2",
-                     "settings": {
-                         "fileUris": "https://raw.githubusercontent.com/Teodelas/azure-lab/master/demo.ps1",
-       	                  "commandToExecute": "powershell -ExecutionPolicy Unrestricted -file demo.ps1"
-                     }
-                 }
-              },
-    {
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "PrimaryVM/MicrosoftMonitoringAgent",
       "dependsOn": [
