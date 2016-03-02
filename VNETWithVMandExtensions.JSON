@@ -220,7 +220,7 @@
                   {
                   "type": "Microsoft.Compute/virtualMachines/extensions",
                   "name": "[concat(variables('vmName'),'/CustomScriptExtension')]",
-                  "apiVersion": "2015-05-01-preview",
+                  "apiVersion": “2015-06-15”,
                   "location": "[resourceGroup().location]",
                   "dependsOn": [
                       "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
@@ -228,10 +228,12 @@
                   "properties": {
        	           "publisher": "Microsoft.Compute",
        	           "type": "CustomScriptExtension",
-                     "typeHandlerVersion": "1.2",
+                    "typeHandlerVersion": "1.7",
+                    "autoUpgrade": "true”,
                      "settings": {
-                         "fileUris": [ "[parameters('scriptFile')]" ],
-       	                  "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -file ',parameters('scriptName'))]"
+                         "fileUris": "https://raw.githubusercontent.com/Teodelas/azure-lab/master/demo.ps1",
+                          "commandToExecute": "powershell -ExecutionPolicy Unrestricted -file demo.ps1"
+
                      }
                  }
               }
