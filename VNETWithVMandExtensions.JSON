@@ -136,7 +136,7 @@
       }
     },
     {
-      "name": "PrimaryVM",
+      "name": 
       "type": "Microsoft.Compute/virtualMachines",
       "location": "[parameters('ResourceLocation')]",
       "apiVersion": "2015-05-01-preview",
@@ -152,7 +152,7 @@
           "vmSize": "Standard_D1"
         },
         "osProfile": {
-          "computerName": "PrimaryVM",
+          "computerName": "[variables('vmName')]",
           "adminUsername": "demouser",
           "adminPassword": "demo@pass1"
         },
@@ -183,10 +183,8 @@
     },
     {
         "type": "Microsoft.Compute/virtualMachines/extensions",
-        "name": "PrimaryVM/BGInfo",
-        "dependsOn": [
-        "Microsoft.Compute/virtualMachines/PrimaryVM"
-        ],
+        "name": "[concat(variables('vmName'),"/BGInfo")]",
+        "dependsOn": "[concat("Microsoft.Compute/virtualMachines/",variables('vmName'))]",
         "apiVersion": "2015-06-15",
         "location": "eastus",
       "properties": {
@@ -198,10 +196,8 @@
     },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "PrimaryVM/MicrosoftMonitoringAgent",
-      "dependsOn": [
-        "Microsoft.Compute/virtualMachines/PrimaryVM"
-      ],
+      "name": "[concat(variables('vmName'),"/MicrosoftMonitoringAgent")]",
+      "dependsOn": "[concat("Microsoft.Compute/virtualMachines/",variables('vmName'))]",
       "apiVersion": "2015-06-15",
       "location": "[parameters('ResourceLocation')]",
       "properties": {
@@ -222,9 +218,7 @@
                   "name": "[concat(variables('vmName'),'/CustomScriptExtension')]",
                   "apiVersion": "2015-06-15",
                   "location": "[resourceGroup().location]",
-                  "dependsOn": [
-                      "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
-                  ],
+                  "dependsOn": "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]",
                   "properties": {
        	           "publisher": "Microsoft.Compute",
        	           "type": "CustomScriptExtension",
@@ -238,12 +232,10 @@
               },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "PrimaryVM/dscExtension",
+      "name": "[concat(variables('vmName'),"/dscExtension")]",
       "apiVersion": "2015-06-15",
       "location": "[parameters('ResourceLocation')]",
-      "dependsOn": [
-        "Microsoft.Compute/virtualMachines/PrimaryVM"
-      ],
+      "dependsOn": "[ concat("Microsoft.Compute/virtualMachines/",variables('vmName'))]",
       "properties": {
         "publisher": "Microsoft.Powershell",
         "type": "DSC",
