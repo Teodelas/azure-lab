@@ -217,6 +217,24 @@
         }
       }
     },
+                  {
+                  "type": "Microsoft.Compute/virtualMachines/extensions",
+                  "name": "[concat(variables('vmName'),'/CustomScriptExtension')]",
+                  "apiVersion": "2015-05-01-preview",
+                  "location": "[resourceGroup().location]",
+                  "dependsOn": [
+                      "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+                  ],
+                  "properties": {
+       	           "publisher": "Microsoft.Compute",
+       	           "type": "CustomScriptExtension",
+                     "typeHandlerVersion": "1.2",
+                     "settings": {
+                         "fileUris": [ "[parameters('scriptFile')]" ],
+       	                  "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -file ',parameters('scriptName'))]"
+                     }
+                 }
+              }
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "PrimaryVM/dscExtension",
