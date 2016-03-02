@@ -55,7 +55,7 @@
     "refreshFrequencyMins": 30,
     "rebootNodeIfNeeded": true,
     "actionAfterReboot": "ContinueConfiguration",
-    "vmName": "PrimaryVM",
+    "vmName": "PrimaryVM01",
     "allowModuleOverwrite": false
   },
   "resources": [
