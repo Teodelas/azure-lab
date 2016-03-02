@@ -186,7 +186,7 @@
         "name": "[concat(variables('vmName'),'/BGInfo')]",
         "dependsOn": [
           "[concat('Microsoft.Compute/virtualMachines/',variables('vmName'))]"
-          ]
+          ],
         "apiVersion": "2015-06-15",
         "location": "eastus",
       "properties": {
@@ -222,7 +222,7 @@
                   "location": "[resourceGroup().location]",
                   "dependsOn": [
                     "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
-                    ]
+                    ],
                   "properties": {
        	           "publisher": "Microsoft.Compute",
        	           "type": "CustomScriptExtension",
