@@ -197,7 +197,7 @@
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('vmName'),'/MicrosoftMonitoringAgent')]",
-      "dependsOn": "[concat("Microsoft.Compute/virtualMachines/",variables('vmName'))]",
+      "dependsOn": "[concat('Microsoft.Compute/virtualMachines/',variables('vmName'))]",
       "apiVersion": "2015-06-15",
       "location": "[parameters('ResourceLocation')]",
       "properties": {
@@ -232,10 +232,10 @@
               },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('vmName'),"/dscExtension")]",
+      "name": "[concat(variables('vmName'),'/dscExtension')]",
       "apiVersion": "2015-06-15",
       "location": "[parameters('ResourceLocation')]",
-      "dependsOn": "[ concat("Microsoft.Compute/virtualMachines/",variables('vmName'))]",
+      "dependsOn": "[ concat('Microsoft.Compute/virtualMachines/',variables('vmName'))]",
       "properties": {
         "publisher": "Microsoft.Powershell",
         "type": "DSC",
