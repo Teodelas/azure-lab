@@ -235,7 +235,7 @@
                           "commandToExecute": "powershell -ExecutionPolicy Unrestricted -file demo.ps1"
                      }
                  }
-              }
+              },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "PrimaryVM/dscExtension",
