@@ -231,7 +231,7 @@
                     "typeHandlerVersion": "1.7",
                     "autoUpgradeMinorVersion": "true",
                      "settings": {
-                         "fileUris": "https://raw.githubusercontent.com/Teodelas/azure-lab/master/demo.ps1",
+                         "fileUris": ["https://raw.githubusercontent.com/Teodelas/azure-lab/master/demo.ps1"],
                           "commandToExecute": "powershell -ExecutionPolicy Unrestricted -file demo.ps1"
                      }
                  }
