@@ -149,7 +149,7 @@
                 }
               ],
 
-              "loadBalancerInboundNatRules": [
+             "loadBalancerInboundNatRules": [
                 {
                   "id": "[concat(resourceId('Microsoft.Network/loadBalancers',concat(variables('lbName'),copyindex()),'/inboundNatRules/SSH-VM')"
                 }
@@ -261,7 +261,7 @@
       },
       "properties": {
         "availabilitySet": {
-          "id": "[resourceId('Microsoft.Compute/availabilitySets',variables('availabilitySetName'))]"
+          "id": "[resourceId('Microsoft.Compute/availabilitySets',concat(variables('availabilitySetName'),copyindex()))]"
         },
         "hardwareProfile": {
           "vmSize": "Standard_DS1_v2"
