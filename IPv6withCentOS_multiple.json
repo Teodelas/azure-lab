@@ -21,7 +21,6 @@
     "vnetName": "myIPv4VNet",
     "ipv4PrivateIPAddressType": "Dynamic",
     "ipv6PrivateIPAddressType": "Dynamic",
-    "numberOfInstances": 2,
     "ipv6PublicIPAddressName": "[concat('IPv6PubAddress',uniqueString(resourceGroup().id))]",
     "ipv4PublicIPAddressName": "[concat('IPv4PubAddress',uniqueString(resourceGroup().id))]",
     "ipv4PublicIPAddressType": "Dynamic",
@@ -49,7 +48,7 @@
     {
       "type": "Microsoft.Compute/availabilitySets",
       "name": "[concat(variables('availabilitySetName'), copyindex())]",
-      "apiVersion": "2016-03-30",
+      "apiVersion": "2015-06-15",
       "copy": {
         "name": "AVSLoop",
         "count": "[parameters('numberOfInstances')]"
@@ -123,7 +122,7 @@
       "location": "[resourceGroup().location]",
       "copy": {
         "name": "nicLoop",
-        "count": "[variables('numberOfInstances')]"
+        "count": "[parameters('numberOfInstances')]"
       },
       "properties": {
         "ipConfigurations": [
@@ -253,11 +252,11 @@
     {
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[concat(variables('vmNamePrefix'), copyindex())]",
-      "apiVersion": "2016-03-30",
+      "apiVersion": "2015-06-15",
       "location": "[resourceGroup().location]",
       "copy": {
         "name": "virtualMachineLoop",
-        "count": "[variables('numberOfInstances')]"
+        "count": "[parameters('numberOfInstances')]"
       },
       "properties": {
         "availabilitySet": {
@@ -382,7 +381,7 @@
       "apiVersion": "2015-06-15",
       "copy": {
         "name": "vmExtenstionLoop",
-        "count": "[variables('numberOfInstances')]"
+        "count": "[parameters('numberOfInstances')]"
       },
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('vmNamePrefix'), copyIndex())]"
