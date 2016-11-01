@@ -133,7 +133,13 @@
               "privateIPAllocationMethod": "[variables('ipv4PrivateIPAddressType')]",
               "subnet": {
                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets',variables('vnetName'), variables('subnetName'))]"
-              }
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[concat(resourceId('Microsoft.Network/loadBalancers',concat(variables('lbName'),copyindex())),'/backendAddressPools/BackendPoolIPv4')]"
+
+                }
+              ]
             }
           },
           {
@@ -214,6 +220,25 @@
           }
         ],
         "loadBalancingRules": [
+          {
+            "name": "LBRuleIPv4",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers',concat(variables('lbName'),copyindex())),'/frontendIPConfigurations/LoadBalancerFrontEndIPv4')]"
+              },
+              "backendAddressPool": {
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers',concat(variables('lbName'),copyindex())), '/backendAddressPools/BackendPoolIPv4')]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": 8080,
+              "backendPort": 8080,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 5,
+              "probe": {
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers',concat(variables('lbName'),copyindex())),'/probes/', variables('ipv4ipv6lbProbeName'))]"
+              }
+            }
+          },
           {
             "name": "LBRuleIPv6",
             "properties": {
@@ -308,7 +333,8 @@
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', variables('vnetName'))]"
       ],
-      "tags": {        "displayName": "ipv6mgmtvmNic"
+      "tags": {
+        "displayName": "ipv6mgmtvmNic"
       },
       "properties": {
         "ipConfigurations": [
@@ -318,22 +344,26 @@
               "privateIPAllocationMethod": "Dynamic",
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'mgmtip')]"
-              },              "subnet": {
+              },
+              "subnet": {
                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets',variables('vnetName'), variables('subnetName'))]"
               }
             }
           }
-        ]      }
+        ]
+      }
     },
     {
       "name": "[variables('ipv6mgmtvmName')]",
-      "type": "Microsoft.Compute/virtualMachines",      "location": "[resourceGroup().location]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "[resourceGroup().location]",
       "apiVersion": "2015-06-15",
       "dependsOn": [
         "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
         "[concat('Microsoft.Network/networkInterfaces/', variables('ipv6mgmtvmNicName'))]"
       ],
-      "tags": {        "displayName": "ipv6mgmtvm"
+      "tags": {
+        "displayName": "ipv6mgmtvm"
       },
       "properties": {
         "hardwareProfile": {
@@ -382,9 +412,9 @@
         "[concat('Microsoft.Compute/virtualMachines/', variables('vmNamePrefix'), copyIndex())]"
       ],
       "properties": {
-        "publisher": "Microsoft.OSTCExtensions",
-        "type": "CustomScriptForLinux",
-        "typeHandlerVersion": "1.5",
+        "publisher": "Microsoft.Azure.Extensions",
+        "type": "CustomScript",
+        "typeHandlerVersion": "2.0",
         "autoUpgradeMinorVersion": true,
         "settings": {
           "fileUris": [
