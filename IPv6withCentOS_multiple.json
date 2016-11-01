@@ -308,8 +308,7 @@
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', variables('vnetName'))]"
       ],
-      "tags": {
-        "displayName": "ipv6mgmtvmNic"
+      "tags": {        "displayName": "ipv6mgmtvmNic"
       },
       "properties": {
         "ipConfigurations": [
@@ -319,26 +318,22 @@
               "privateIPAllocationMethod": "Dynamic",
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'mgmtip')]"
-              },
-              "subnet": {
+              },              "subnet": {
                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets',variables('vnetName'), variables('subnetName'))]"
               }
             }
           }
-        ]
-      }
+        ]      }
     },
     {
       "name": "[variables('ipv6mgmtvmName')]",
-      "type": "Microsoft.Compute/virtualMachines",
-      "location": "[resourceGroup().location]",
+      "type": "Microsoft.Compute/virtualMachines",      "location": "[resourceGroup().location]",
       "apiVersion": "2015-06-15",
       "dependsOn": [
         "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
         "[concat('Microsoft.Network/networkInterfaces/', variables('ipv6mgmtvmNicName'))]"
       ],
-      "tags": {
-        "displayName": "ipv6mgmtvm"
+      "tags": {        "displayName": "ipv6mgmtvm"
       },
       "properties": {
         "hardwareProfile": {
@@ -389,7 +384,7 @@
       "properties": {
         "publisher": "Microsoft.OSTCExtensions",
         "type": "CustomScriptForLinux",
-        "typeHandlerVersion": "2.0",
+        "typeHandlerVersion": "1.5",
         "autoUpgradeMinorVersion": true,
         "settings": {
           "fileUris": [
