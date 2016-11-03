@@ -2,4 +2,4 @@
   [string]$FQDN
 )
 
-$FQDN | Out-File test.txt
+$FQDN | Out-File "c:\users\public\test.txt"
