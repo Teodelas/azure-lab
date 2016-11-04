@@ -1,6 +1,10 @@
  Param(
   [string]$FQDN
+  [string]$blobendpoint
+  [string]$key
 )
+
+ 
  Add-WindowsFeature -Name RDS-Gateway -IncludeAllSubFeature
  Add-WindowsFeature -Name 
  Import-Module RemoteDesktopServices
@@ -13,3 +17,15 @@
 
  Set-Item -Path RDS:\GatewayServer\SSLCertificate\Thumbprint -Value $cert.Thumbprint
  get-childitem cert:\localmachine\my | where-object { $_.Subject -eq "CN=$FQDN" } | Export-Certificate -FilePath 'c:\users\rdgw.cer'
+
+invoke-webrequest http://aka.ms/downloadazcopy -OutFile azcopy.msi
+.\azcopy.msi /quiet
+Start-Sleep -s 60
+
+cd "C:\Program Files (x86)\Microsoft SDKs\Azure\AZCopy"
+.\AzCopy.exe /Source:C:\users /Dest:$blobendpoint /DestKey:$key /Pattern:rdgw.cer
+
+
+
+
+
