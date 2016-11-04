@@ -1,6 +1,6 @@
  Param(
-  [string]$FQDN
-  [string]$blobendpoint
+  [string]$FQDN,
+  [string]$blobendpoint,
   [string]$key
 )
 
@@ -25,3 +25,4 @@ Start-Sleep -s 60
 
 cd "C:\Program Files (x86)\Microsoft SDKs\Azure\AZCopy"
 .\AzCopy.exe /Source:C:\users /Dest:$blobendpoint /DestKey:$key /Pattern:rdgw.cer
+
