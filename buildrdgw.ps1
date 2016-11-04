@@ -19,6 +19,8 @@ $key | out-file c:\users\key.txt
  Set-Item -Path RDS:\GatewayServer\SSLCertificate\Thumbprint -Value $cert.Thumbprint
  get-childitem cert:\localmachine\my | where-object { $_.Subject -eq "CN=$FQDN" } | Export-Certificate -FilePath 'c:\users\rdgw.cer'
 
+ CD C:\
+
 invoke-webrequest http://aka.ms/downloadazcopy -OutFile azcopy.msi
 .\azcopy.msi /quiet
 Start-Sleep -s 60
