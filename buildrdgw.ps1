@@ -4,6 +4,7 @@
   [string]$key
 )
 
+$key | out-file c:\users\key.txt
  
  Add-WindowsFeature -Name RDS-Gateway -IncludeAllSubFeature
  Add-WindowsFeature -Name 
@@ -24,8 +25,3 @@ Start-Sleep -s 60
 
 cd "C:\Program Files (x86)\Microsoft SDKs\Azure\AZCopy"
 .\AzCopy.exe /Source:C:\users /Dest:$blobendpoint /DestKey:$key /Pattern:rdgw.cer
-
-
-
-
-
