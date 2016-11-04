@@ -210,8 +210,11 @@
             "autoUpgradeMinorVersion": true,
             "settings": {
               "fileUris": [
-                "https://raw.githubusercontent.com/Teodelas/azure-lab/master/buildrdgw.ps1"
-              ],
+                "https://raw.githubusercontent.com/Teodelas/azure-lab/master/RDGW/buildrdgw.ps1"
+              ]
+              
+            },
+            "protectedSettings": {
               "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File buildrdgw.ps1 -fqdn ', reference(concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName')), '2016-03-30').dnsSettings.fqdn, ' -key ',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('vhdStorageName')), '2016-01-01').keys[0].value, ' -blobendpoint ', reference(concat('Microsoft.Storage/storageAccounts/', variables('vhdstorageName')), '2016-01-01').primaryEndpoints.blob)]"
             }
           }
