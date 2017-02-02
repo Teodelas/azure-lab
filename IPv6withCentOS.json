@@ -1,60 +1,61 @@
 {
-    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "adminUsername": {
-            "type": "String",
-            "metadata": {
-                "description": "Admin username"
-            }
-        },
-        "adminPassword": {
-            "type": "SecureString",
-            "metadata": {
-                "description": "Admin password"
-            }
-        },
-        "ipv6mgmtvmName": {
-            "type": "string",
-            "minLength": 1
-        },
-        "ipv6mgmtvmWindowsOSVersion": {
-            "type": "string",
-            "defaultValue": "2012-R2-Datacenter",
-            "allowedValues": [
-                "2012-R2-Datacenter"
-            ]
-        }
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "adminUsername": {
+      "type": "String",
+      "metadata": {
+        "description": "Admin username"
+      }
     },
-    "variables": {
-        "vmNamePrefix": "myIPv6VM",
-        "nicNamePrefix": "IPv6Nic",
-        "storageAccountName": "[concat(uniqueString(resourceGroup().id), 'vhds')]",
-        "availabilitySetName": "myIPv6AvSet",
-        "addressPrefix": "10.0.0.0/16",
-        "subnetName": "myIPv4Subnet",
-        "subnetPrefix": "10.0.0.0/24",
-        "vnetName": "myIPv4VNet",
-        "ipv4PrivateIPAddressType": "Dynamic",
-        "ipv6PrivateIPAddressType": "Dynamic",
-        "numberOfInstances": 2,
-        "ipv6PublicIPAddressName": "myIPv6PublicIP",
-        "ipv4PublicIPAddressName": "myIPv4PublicIP",
-        "ipv4PublicIPAddressType": "Dynamic",
-        "ipv6PublicIPAddressType": "Dynamic",
-        "lbName": "myIPv4IPv6LB",
-        "lbID": "[resourceId('Microsoft.Network/loadBalancers',variables('lbName'))]",
-        "ipv4FrontEndIPConfigID": "[concat(variables('lbID'),'/frontendIPConfigurations/LoadBalancerFrontEndIPv4')]",
-        "ipv6FrontEndIPConfigID": "[concat(variables('lbID'),'/frontendIPConfigurations/LoadBalancerFrontEndIPv6')]",
-        "ipv4LbBackendPoolID": "[concat(variables('lbID'),'/backendAddressPools/BackendPoolIPv4')]",
-        "ipv6LbBackendPoolID": "[concat(variables('lbID'),'/backendAddressPools/BackendPoolIPv6')]",
-        "ipv4ipv6lbProbeName": "tcpProbeIPv4IPv6",
-        "ipv4ipv6lbProbeID": "[concat(variables('lbID'),'/probes/', variables('ipv4ipv6lbProbeName'))]",
-        "ipv6mgmtvmImagePublisher": "MicrosoftWindowsServer",
-        "ipv6mgmtvmImageOffer": "WindowsServer",
-        "ipv6mgmtvmVmSize": "Standard_D1",
-        "ipv6mgmtvmNicName": "[concat(parameters('ipv6mgmtvmName'), 'NetworkInterface')]"
+    "adminPassword": {
+      "type": "SecureString",
+      "metadata": {
+        "description": "Admin password"
+      }
     },
+    "ipv6mgmtvmName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ipv6mgmtvmWindowsOSVersion": {
+      "type": "string",
+      "defaultValue": "2012-R2-Datacenter",
+      "allowedValues": [
+        "2012-R2-Datacenter"
+      ]
+    }
+  },
+  "variables": {
+    "vmNamePrefix": "myIPv6VM",
+    "nicNamePrefix": "IPv6Nic",
+    "storageAccountName": "[concat(uniqueString(resourceGroup().id), 'vhds')]",
+    "dnsNameforIPv6": "[concat(variables('lbName'),uniqueString(resourceGroup().id))]",
+    "availabilitySetName": "myIPv6AvSet",
+    "addressPrefix": "10.0.0.0/16",
+    "subnetName": "myIPv4Subnet",
+    "subnetPrefix": "10.0.0.0/24",
+    "vnetName": "myIPv4VNet",
+    "ipv4PrivateIPAddressType": "Dynamic",
+    "ipv6PrivateIPAddressType": "Dynamic",
+    "numberOfInstances": 2,
+    "ipv6PublicIPAddressName": "myIPv6PublicIP",
+    "ipv4PublicIPAddressName": "myIPv4PublicIP",
+    "ipv4PublicIPAddressType": "Dynamic",
+    "ipv6PublicIPAddressType": "Dynamic",
+    "lbName": "myIPv4IPv6LB",
+    "lbID": "[resourceId('Microsoft.Network/loadBalancers',variables('lbName'))]",
+    "ipv4FrontEndIPConfigID": "[concat(variables('lbID'),'/frontendIPConfigurations/LoadBalancerFrontEndIPv4')]",
+    "ipv6FrontEndIPConfigID": "[concat(variables('lbID'),'/frontendIPConfigurations/LoadBalancerFrontEndIPv6')]",
+    "ipv4LbBackendPoolID": "[concat(variables('lbID'),'/backendAddressPools/BackendPoolIPv4')]",
+    "ipv6LbBackendPoolID": "[concat(variables('lbID'),'/backendAddressPools/BackendPoolIPv6')]",
+    "ipv4ipv6lbProbeName": "tcpProbeIPv4IPv6",
+    "ipv4ipv6lbProbeID": "[concat(variables('lbID'),'/probes/', variables('ipv4ipv6lbProbeName'))]",
+    "ipv6mgmtvmImagePublisher": "MicrosoftWindowsServer",
+    "ipv6mgmtvmImageOffer": "WindowsServer",
+    "ipv6mgmtvmVmSize": "Standard_D1",
+    "ipv6mgmtvmNicName": "[concat(parameters('ipv6mgmtvmName'), 'NetworkInterface')]"
+  },
   "resources": [
     {
       "type": "Microsoft.Storage/storageAccounts",
@@ -99,7 +100,10 @@
       "location": "[resourceGroup().location]",
       "properties": {
         "publicIPAddressVersion": "IPv6",
-        "publicIPAllocationMethod": "[variables('ipv6PublicIPAddressType')]"
+        "publicIPAllocationMethod": "[variables('ipv6PublicIPAddressType')]",
+        "dnsSettings": {
+          "domainNameLabel": "[variables('dnsNameforIPv6')]"
+        }
       }
     },
     {
@@ -133,6 +137,7 @@
         "count": "[variables('numberOfInstances')]"
       },
       "properties": {
+        "enableIPForwarding": true,
         "ipConfigurations": [
           {
             "name": "ipv4IPConfig",
@@ -141,17 +146,7 @@
               "privateIPAllocationMethod": "[variables('ipv4PrivateIPAddressType')]",
               "subnet": {
                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets',variables('vnetName'), variables('subnetName'))]"
-              },
-              "loadBalancerBackendAddressPools": [
-                {
-                  "id": "[variables('ipv4LbBackendPoolID')]"
-                }
-              ],
-              "loadBalancerInboundNatRules": [
-                {
-                  "id": "[concat(variables('lbID'),'/inboundNatRules/SSH-VM', copyindex())]"
-                }
-              ]
+              }
             }
           },
           {
