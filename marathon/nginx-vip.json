@@ -1,5 +1,5 @@
 {
-  "id": "nginx-external",
+  "id": "nginx-vip`",
   "container": {
     "type": "DOCKER",
     "docker": {
