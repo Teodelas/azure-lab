@@ -26,6 +26,6 @@
   "labels":{
     "HAPROXY_GROUP":"external",
     "HAPROXY_0_VHOST":"",
-    "HAPROXY_0_PATH": "/upload"
+    "HAPROXY_0_PATH": "/path1"
   }
 }
