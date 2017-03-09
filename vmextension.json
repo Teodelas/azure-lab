@@ -1,0 +1,21 @@
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(variables('XREvmPrefix'),'/','linuxipv6config')]",
+      "location": "[parameters('Region')]",
+      "apiVersion": "2015-06-15",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('XREVMPrefix'))]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Azure.Extensions",
+        "type": "CustomScript",
+        "typeHandlerVersion": "2.0",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "fileUris": [
+            "https://raw.githubusercontent.com/Teodelas/azure-lab/master/linuxipv6config.sh"
+          ],
+          "commandToExecute": "sh linuxipv6config.sh"
+        }
+      }
+    }
