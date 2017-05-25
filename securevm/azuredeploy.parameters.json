@@ -5,7 +5,7 @@
     "aadClientID": {
       "reference": {
         "keyVault": {
-          "id": "[variables('keyVaultResourceID')]"
+          "id": "/subscriptions/fed7f475-6055-4e3c-8529-c1345df70589/resourceGroups/securevm/providers/Microsoft.KeyVault/vaults/securevm"
         },
         "secretName": "aadclientid"
       }
@@ -13,14 +13,13 @@
     "aadClientSecret": {
       "reference": {
         "keyVault": {
-          "id": "[variables('keyVaultResourceID')]"
+          "id": "/subscriptions/fed7f475-6055-4e3c-8529-c1345df70589/resourceGroups/securevm/providers/Microsoft.KeyVault/vaults/securevm"
         },
         "secretName": "aadclientsecret"
       }
     },
     "vmName": {
       "value": "securevm"
-      }
-    
+    }
   }
 }
