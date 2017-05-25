@@ -2,10 +2,23 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "aadClientID": {
+    "type": "string"
+    },
+    "aadClientSecret": {
+      "type": "string"
+
+    },
+    "vmName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the virtual machine"
+      }
+    },
     "keyVaultName": {
       "type": "string",
       "metadata": {
-        "description": "Name of the KeyVault to place the volume encryption key..."
+        "description": "Name of the KeyVault to place the volume encryption key"
       }
     },
     "keyVaultResourceGroup": {
@@ -51,11 +64,13 @@
         "forceUpdateTag": "[parameters('sequenceVersion')]",
         "settings": {
           "AADClientID": "[parameters('aadClientID')]",
-          "AADClientSecret": "[parameters('aadClientSecret')]",
           "KeyVaultURL": "[variables('keyVaultURL')]",
           "KeyEncryptionAlgorithm": "[variables('keyEncryptionAlgorithm')]",
           "VolumeType": "[parameters('volumeType')]",
           "EncryptionOperation": "[variables('encryptionOperation')]"
+        },
+        "protectedSettings": {
+          "AADClientSecret": "[parameters('aadClientSecret')]"
         }
       }
     },
