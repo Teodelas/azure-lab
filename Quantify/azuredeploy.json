@@ -96,7 +96,7 @@
           "imageReference": {
             "publisher": "MicrosoftWindowsServer",
             "offer": "WindowsServer",
-            "sku": "2012-Datacenter",
+            "sku": "2012-Datacenter-HUB",
             "version": "latest"
           },
           "osDisk": {
