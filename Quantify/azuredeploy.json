@@ -87,6 +87,7 @@
         "hardwareProfile": {
           "vmSize": "Standard_DS3_v2"
         },
+        "licenseType": "Windows_Server",
         "osProfile": {
           "computerName": "[concat(variables('vmNamePrefix'), copyIndex())]",
           "adminUsername": "[variables('adminUsername')]",
@@ -96,7 +97,7 @@
           "imageReference": {
             "publisher": "MicrosoftWindowsServer",
             "offer": "WindowsServer",
-            "sku": "2012-Datacenter-HUB",
+            "sku": "2012-Datacenter",
             "version": "latest"
           },
           "osDisk": {
