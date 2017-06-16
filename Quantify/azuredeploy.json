@@ -4,49 +4,27 @@
   "parameters": {
     "numberofInstances": {
       "type": "int"
+    },
+    "vnetName": {
+      "type": "string"
+    },
+    "subnetName": {
+      "type": "string"
     }
+
 
   },
   "variables": {
-    "vnetName": "W-RSGN-NONPROD-NA21-VNET",
-    "addressPrefix": "10.206.78.0/23",
-    "subnetName": "Subnet",
-    "subnetPrefix": "10.206.78.0/23",
-
     "adminUsername": "twadmin",
     "adminPassword": "Password.12345",
     "vmNamePrefix": "N21-BN-",
     "nicNamePrefix": "[concat(variables('vmNamePrefix'),'NIC-')]",
 
-    "vnetID": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', variables('vnetName'))]",
-    "subnetRef": "[concat(variables('vnetID'),'/subnets/', variables('subnetName'))]",
+    "vnetID": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
+    "subnetRef": "[concat(variables('vnetID'),'/subnets/', parameters('subnetName'))]"
 
   },
   "resources": [
-    {
-      "type": "Microsoft.Network/virtualNetworks",
-      "name": "[variables('vnetName')]",
-      "apiVersion": "2016-03-30",
-      "location": "[resourceGroup().location]",
-      "dependsOn": [
-      ],
-      "properties": {
-        "addressSpace": {
-          "addressPrefixes": [
-            "[variables('addressPrefix')]"
-          ]
-        },
-        "subnets": [
-          {
-            "name": "[variables('subnetName')]",
-            "properties": {
-              "addressPrefix": "[variables('subnetPrefix')]"
-            }
-          }
-        ]
-
-      }
-    },
     {
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat(variables('nicNamePrefix'), copyindex())]",
@@ -69,10 +47,7 @@
             }
           }
         ]
-      },
-      "dependsOn": [
-        "[concat('Microsoft.Network/virtualNetworks/', variables('vnetName'))]"
-      ]
+      }
     },
     {
       "type": "Microsoft.Compute/virtualMachines",
