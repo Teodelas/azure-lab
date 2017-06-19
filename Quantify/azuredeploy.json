@@ -47,7 +47,6 @@
     "adminUsername": "twadmin",
     "adminPassword": "Password.12345",
     "vmNamePrefix": "N21-BN-",
-    "nicNamePrefix": "[concat(variables('vmNamePrefix'),'NIC-')]",
     "avsetname": "QuantifyAVSet",
 
     "vnetID": "[resourceId(parameters('vnetResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
