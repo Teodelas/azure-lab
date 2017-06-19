@@ -10,8 +10,37 @@
     },
     "subnetName": {
       "type": "string"
+    },
+    "vnetResourceGroup": {
+      "type": "string"
+    },
+    "DomainFQDN": {
+      "type": "string",
+      "metadata": {
+        "description": "Domain to join"
+      },
+      "defaultValue": "internal.towerswatson.com"
+    },
+    "DomainJoinOUPath": {
+      "type": "string",
+      "metadata": {
+        "description": "OU path to place computer object"
+      },
+      "defaultValue": "OU=Dev,OU=dcAzure,OU=Directory Services,OU=Servers,OU=Resources,DC=internal,DC=towerswatson,DC=com "
+    },
+    "domainJoinUser": {
+      "type": "string",
+      "metadata": {
+        "description": "The username to join VM to domain "
+      },
+      "defaultValue": "internal\\ryan2010adm"
+    },
+    "domainJoinPassword": {
+      "metadata": {
+        "description": "The password for the domain join account."
+      },
+      "type": "securestring"
     }
-
 
   },
   "variables": {
@@ -19,8 +48,9 @@
     "adminPassword": "Password.12345",
     "vmNamePrefix": "N21-BN-",
     "nicNamePrefix": "[concat(variables('vmNamePrefix'),'NIC-')]",
+    "avsetname": "QuantifyAVSet",
 
-    "vnetID": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
+    "vnetID": "[resourceId(parameters('vnetResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
     "subnetRef": "[concat(variables('vnetID'),'/subnets/', parameters('subnetName'))]"
 
   },
@@ -62,6 +92,9 @@
         "hardwareProfile": {
           "vmSize": "Standard_DS3_v2"
         },
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('avsetname'))]"
+        },
         "licenseType": "Windows_Server",
         "osProfile": {
           "computerName": "[concat(variables('vmNamePrefix'), copyIndex())]",
@@ -89,8 +122,52 @@
         }
       },
       "dependsOn": [
-        "[concat('Microsoft.Network/networkInterfaces/', variables('nicNamePrefix'), copyindex())]"
+        "[concat('Microsoft.Network/networkInterfaces/', variables('nicNamePrefix'), copyindex())]",
+        "[concat('Microsoft.Compute/availabilitySets/', variables('avsetname'))]"
       ]
+    },
+    {
+      "apiVersion": "2016-04-30-preview",
+      "dependsOn": [],
+      "location": "[resourceGroup().location]",
+      "name": "[variables('avsetname')]",
+      "properties": {
+        "platformUpdateDomainCount": 5,
+        "platformFaultDomainCount": 3
+      },
+      "tags": {
+        "displayName": "AvailabiltySetName"
+      },
+      "type": "Microsoft.Compute/availabilitySets"
+    },
+    {
+      "apiVersion": "2016-04-30-preview",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(variables('vmNamePrefix'), copyIndex() ,'/joindomain')]",
+      "copy": {
+        "name": "domainextension",
+        "count": "[parameters('NumberOfInstances')]"
+      },
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/' , variables('vmNamePrefix'), copyIndex())]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Compute",
+        "type": "JsonADDomainExtension",
+        "typeHandlerVersion": "1.3",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "Name": "[parameters('domainFQDN')]",
+          "Options": "3",
+          "OUPath": "[parameters('domainjoinouPath')]",
+          "Restart": "true",
+          "User": "[parameters('domainJoinUser')]"
+        },
+        "protectedsettings": {
+          "Password": "[parameters('domainJoinPassword')]"
+        }
+      }
     }
   ],
   "outputs": {
