@@ -110,7 +110,15 @@
           "osDisk": {
             "name": "[concat(variables('vmNamePrefix'), copyindex(), 'OSdisk',uniqueString(resourceGroup().id))]",
             "createOption": "FromImage"
-          }
+          },
+          "dataDisks": [
+            {
+              "diskSizeGB": 500,
+              "lun": 0,
+              "createOption": "Empty"
+            }
+          ]
+
         },
         "networkProfile": {
           "networkInterfaces": [
