@@ -176,6 +176,29 @@
           "Password": "[parameters('domainJoinPassword')]"
         }
       }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(variables('vmNamePrefix'), copyIndex(),'/CustomScriptExtension')]",
+      "apiVersion": "2015-06-15",
+      "copy": {
+        "name": "domainextension",
+        "count": "[parameters('NumberOfInstances')]"
+      },
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/' , variables('vmNamePrefix'), copyIndex())]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Compute",
+        "type": "CustomScriptExtension",
+        "typeHandlerVersion": "1.8",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "fileUris": [ "https://raw.githubusercontent.com/Teodelas/azure-lab/master/Quantify/addlocaladmins.ps1" ],
+          "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -file addlocaladmins.ps1"
+        }
+      }
     }
   ],
   "outputs": {
