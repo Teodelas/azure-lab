@@ -12,4 +12,3 @@ service httpd start
 systemctl enable httpd.service
 log "Rebooting system"
 shutdown -r +2 "Rebooting to apply IPv6 changes."
-shutdown -r +2 "Rebooting to apply IPv6 changes."
