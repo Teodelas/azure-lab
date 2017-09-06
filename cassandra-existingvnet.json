@@ -146,7 +146,7 @@
               "fileUris": [
                 "https://raw.githubusercontent.com/Teodelas/azure-lab/master/deploycassandra.sh"
               ],
-              "commandToExecute": "sh scriptCassandraProvisioner.sh"
+              "commandToExecute": "sh deploycassandra.sh"
             }
           }
         }
