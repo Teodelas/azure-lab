@@ -8,16 +8,10 @@
         "description": "Admin username for VM"
       }
     },
-    "password": {
+    "sshKeyData": {
       "type": "string",
       "metadata": {
         "description": "SSH rsa public key file as a string."
-      }
-    },
-    "imageName": {
-      "type": "string",
-      "metadata": {
-        "description": "The name of the Managed Image"
       }
     },
     "numberOfInstances": {
@@ -39,7 +33,14 @@
     }
   },
   "variables": {
-    "availabilitySetName": "myAvSet"
+    "availabilitySetName": "myAvSet",
+    "OS": {
+      "publisher": "OpenLogic",
+      "offer": "CentOS",
+      "sku": "7.1",
+      "version": "latest"
+    },
+    "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]"
   },
   "resources": [
     {
@@ -55,7 +56,7 @@
     },
     {
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "[concat('myVMnic', copyindex())]",
+      "name": "[concat('cassandraVM', copyindex(), '-nic' )]",
       "apiVersion": "2016-03-30",
       "location": "[resourceGroup().location]",
       "copy": {
@@ -78,7 +79,7 @@
     },
     {
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[concat('myVM', copyIndex())]",
+      "name": "[concat('cassandraVM', copyIndex())]",
       "apiVersion": "2016-04-30-preview",
       "location": "[resourceGroup().location]",
       "copy": {
@@ -98,24 +99,32 @@
         "osProfile": {
           "computerName": "[concat('vm', copyIndex())]",
           "adminUsername": "[parameters('adminUsername')]",
-          "adminPassword": "[parameters('password')]"
-          },
-        "storageProfile": {
-          "imageReference": {
-            "id": "[resourceId('Microsoft.Compute/images', parameters('imageName'))]"
-          },
-          "osDisk": {
-            "createOption": "FromImage"
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[variables('sshKeyPath')]",
+                  "keyData": "[parameters('sshKeyData')]"
+                }
+              ]
+            }
           }
         },
-        "networkProfile": {
-          "networkInterfaces": [
-            {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces',concat('myVMnic', copyindex()))]"
+         "storageProfile": {
+            "imageReference": "[variables('OS')]",
+            "osDisk": {
+              "createOption": "FromImage"
             }
-          ]
+          },
+         "networkProfile": {
+            "networkInterfaces": [
+              {
+                "id": "[resourceId('Microsoft.Network/networkInterfaces',concat('nic', copyindex()))]"
+              }
+            ]
+          }
         }
-      }
     }
   ]
 }
