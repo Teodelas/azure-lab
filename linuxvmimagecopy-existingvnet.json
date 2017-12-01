@@ -34,7 +34,7 @@
       "metadata": {
         "description": "ID of the subnet to deploy the VM's into"
       },
-      "defaultValue": "To get subnet ID's run: az network vnet list --query [].subnets[].id"
+      "defaultValue": "To get subnet ID's run: az network vnet list --resourcegroup <rg> -o table --query [].subnets[].id"
     }
   },
   "variables": {
@@ -110,20 +110,20 @@
             }
           }
         },
-         "storageProfile": {
-            "imageReference": "[resourceId('Microsoft.Compute/images', parameters('imageName'))]",
-            "osDisk": {
-              "createOption": "FromImage"
-            }
-          },
-         "networkProfile": {
-            "networkInterfaces": [
-              {
-                "id": "[resourceId('Microsoft.Network/networkInterfaces',concat('myLinuxVM', copyindex()))]"
-              }
-            ]
+        "storageProfile": {
+          "imageReference": "[resourceId('Microsoft.Compute/images', parameters('imageName'))]",
+          "osDisk": {
+            "createOption": "FromImage"
           }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',concat('myLinuxVM', copyindex()))]"
+            }
+          ]
         }
+      }
     }
   ]
 }
