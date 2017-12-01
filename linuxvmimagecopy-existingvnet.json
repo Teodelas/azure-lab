@@ -111,7 +111,9 @@
           }
         },
         "storageProfile": {
-          "imageReference": "[resourceId('Microsoft.Compute/images', parameters('imageName'))]",
+        "imageReference": {
+            "id": "[resourceId('Microsoft.Compute/images', parameters('imageName'))]"
+          },
           "osDisk": {
             "createOption": "FromImage"
           }
