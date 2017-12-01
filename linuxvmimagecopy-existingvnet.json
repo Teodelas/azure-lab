@@ -23,10 +23,10 @@
         "description": "Number of VMs to deploy, limit 5 since this sample is using a single storage account"
       }
     },
-    "imageName": {
+    "imageID": {
       "type": "string",
       "metadata": {
-        "description": "The name of the Managed Image"
+        "description": "To get the Image ID's run: az image list --resource-group <rg> -o table --query [].id"
       }
     },
     "subnetID": {
@@ -112,7 +112,7 @@
         },
         "storageProfile": {
         "imageReference": {
-            "id": "[resourceId('Microsoft.Compute/images', parameters('imageName'))]"
+            "id": "[parameters('imageID')]"
           },
           "osDisk": {
             "createOption": "FromImage"
