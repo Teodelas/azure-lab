@@ -1,0 +1,19 @@
+1.	Deploy a namespace for ingress controller:
+a.	curl https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/namespace.yaml | kubectl apply -f -
+2.	Deploy a default backend service:
+a.	curl https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/default-backend.yaml | kubectl apply -f –
+b.	Used by nginx as the default route (when no rules match)
+3.	Deploy the config maps
+a.	curl https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/configmap.yaml | kubectl apply -f –
+b.	curl https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/tcp-services-configmap.yaml | kubectl apply -f –
+c.	curl https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/udp-services-configmap.yaml | kubectl apply -f -
+4.	Deploy the nginx pod for the Ingress Controller:
+a.	curl https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/without-rbac.yaml | kubectl apply -f -
+5.	Deploy a service (Load Balancer) for the nginx controller:
+a.	kubectl patch deployment -n ingress-nginx nginx-ingress-controller --type='json' --patch="$(curl https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/patch-deployment.yaml)"
+b.	curl https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/provider/azure/service.yaml | kubectl apply -f –
+c.	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/provider/patch-service-without-rbac.yaml 
+6.	Deploy machineq-ingress-controller.yaml (attached)
+a.	Kubectl apply -f ingress-controller.yaml
+7.	Get the IP address of the ingress controller
+a.	Kubectl get ingress 
