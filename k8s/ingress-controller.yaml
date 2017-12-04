@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+ name: vote-Ingress
+spec:
+ rules:
+ - host: test1.teodemo.com
+   http:
+    paths:
+    - backend:
+       serviceName: azure-vote-front-1
+       servicePort: 80
+ - host: test2.teodemo.com
+   http:
+    paths:
+    - backend:
+       serviceName: azure-vote-front-2
+       servicePort: 80
