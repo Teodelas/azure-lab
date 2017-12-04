@@ -105,7 +105,7 @@ spec:
         image: teodelas/azure-vote-front
         ports:
         - containerPort: 80
-         resources:
+        resources:
           requests:
             cpu: 250m
           limits:
