@@ -102,7 +102,7 @@ spec:
     spec:
       containers:
       - name: azure-vote-front-2
-        image: teodelas/azure-vote-front:redis-v1
+        image: teodelas/azure-vote-front
         ports:
         - containerPort: 80
          resources:
