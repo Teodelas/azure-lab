@@ -1,0 +1,8 @@
+#Grant Owner and Read Only
+SUBS=$(az account list --query [].id -o tsv)
+#for (( i=0; i<${#SUBS[@]}; i++ )); do echo ${SUBS[i]} ; done
+for (( i=0; i<${#SUBS[@]}; i++ )); az role assignment create --assignee 'azure-globaladmins@comcast.com' --role Owner --scope /subscriptions/${SUBS[i]} ; done
+for (( i=0; i<${#SUBS[@]}; i++ )); az role assignment create --assignee 'azure-globalreaders@comcast.com' --role Reader --scope /subscriptions/${SUBS[i]} ; done
+
+#Add custom roles
+for (( i=0; i<${#SUBS[@]}; i++ )); az role assignment create --assignee 'azure-globaladmins@comcast.com' --role Owner --scope /subscriptions/${SUBS[i]} ; done
