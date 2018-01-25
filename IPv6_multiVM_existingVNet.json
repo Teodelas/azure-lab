@@ -1,0 +1,327 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "numberofInstances": {
+      "type": "int",
+      "defaultValue": 1
+    },
+    "VNetName": {
+      "type": "string",
+      "defaultValue": "MyVNet"
+    },
+    "SubnetName": {
+      "type": "string",
+      "defaultValue": "Default"
+    },
+    "Region": {
+      "type": "string",
+      "defaultValue": "eastus",
+      "allowedValues": [
+        "eastus",
+        "westus",
+        "centralus"
+      ]
+    }
+
+  },
+  "variables": {
+    "adminUsername": "comcast",
+    "adminPassword": "Password.12345",
+    "vmNamePrefix": "[concat('MachineQVM',uniqueString(resourceGroup().id))]",
+    "nicNamePrefix": "[concat('MachineQNic',uniqueString(resourceGroup().id))]",
+    "ipv4PrivateIPAddressType": "Dynamic",
+    "ipv6PrivateIPAddressType": "Dynamic",
+    "ipv6PublicIPAddressName": "[concat('LBIPv6PubAddress',uniqueString(resourceGroup().id))]",
+    "ipv4PublicIPAddressName": "[concat('LBIPv4PubAddress',uniqueString(resourceGroup().id))]",
+    "ipv4PublicIPAddressType": "Dynamic",
+    "ipv6PublicIPAddressType": "Dynamic",
+    "lbName": "[concat('IPv6v4LB',uniqueString(resourceGroup().id))]",
+    "lbID": "[resourceId('Microsoft.Network/loadBalancers',variables('lbName'))]",
+    "ipv4ipv6lbProbeName": "tcpProbeIPv4IPv6",
+    "vnetID": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', parameters('VNetName'))]",
+    "subnetRef": "[concat(variables('vnetID'),'/subnets/', parameters('subnetName'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[concat(variables('ipv4PublicIPAddressName'), copyindex())]",
+      "apiVersion": "2016-03-30",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "IPv4Loop",
+        "count": "[parameters('numberOfInstances')]"
+      },
+      "properties": {
+        "publicIPAddressVersion": "IPv4",
+        "publicIPAllocationMethod": "[variables('ipv4PublicIPAddressType')]"
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[concat(variables('ipv6PublicIPAddressName'), copyindex())]",
+      "apiVersion": "2016-03-30",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "IPv6Loop",
+        "count": "[parameters('numberOfInstances')]"
+      },
+      "properties": {
+        "publicIPAddressVersion": "IPv6",
+        "publicIPAllocationMethod": "[variables('ipv6PublicIPAddressType')]"
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(variables('nicNamePrefix'), copyindex())]",
+      "apiVersion": "2016-03-30",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "nicLoop",
+        "count": "[parameters('numberOfInstances')]"
+      },
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipv4IPConfig",
+            "properties": {
+              "privateIPAddressVersion": "IPv4",
+              "privateIPAllocationMethod": "[variables('ipv4PrivateIPAddressType')]",
+              "subnet": {
+                "id": "[variables('subnetRef')]"
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[concat(resourceId('Microsoft.Network/loadBalancers',concat(variables('lbName'),copyindex())),'/backendAddressPools/BackendPoolIPv4')]"
+
+                }
+              ],
+
+              "loadBalancerInboundNatRules": [
+                {
+                  "id": "[concat(resourceId('Microsoft.Network/loadBalancers',concat(variables('lbName'), copyindex())),'/inboundNatRules/SSHv4')]"
+
+                },
+                {
+                  "id": "[concat(resourceId('Microsoft.Network/loadBalancers',concat(variables('lbName'), copyindex())),'/inboundNatRules/80v4')]"
+
+                }
+              ]
+            }
+          },
+          {
+            "name": "ipv6IPConfig",
+            "properties": {
+              "privateIPAddressVersion": "IPv6",
+              "privateIPAllocationMethod": "[variables('ipv6PrivateIPAddressType')]",
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[concat(resourceId('Microsoft.Network/loadBalancers',concat(variables('lbName'),copyindex())),'/backendAddressPools/BackendPoolIPv6')]"
+
+                }
+              ],
+
+              "loadBalancerInboundNatRules": [
+
+                {
+                  "id": "[concat(resourceId('Microsoft.Network/loadBalancers',concat(variables('lbName'), copyindex())),'/inboundNatRules/SSHv6')]"
+
+                },
+
+                {
+                  "id": "[concat(resourceId('Microsoft.Network/loadBalancers',concat(variables('lbName'), copyindex())),'/inboundNatRules/80v6')]"
+
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/loadBalancers/', variables('lbName'), copyindex())]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/loadBalancers",
+      "name": "[concat(variables('lbName'), copyindex())]",
+      "apiVersion": "2016-03-30",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "LBLoop",
+        "count": "[parameters('numberOfInstances')]"
+      },
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "LoadBalancerFrontEndIPv4",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('ipv4PublicIPAddressName'), copyindex()))]"
+              }
+            }
+          },
+          {
+            "name": "LoadBalancerFrontEndIPv6",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',concat(variables('ipv6PublicIPAddressName'), copyindex()))]"
+              }
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "BackendPoolIPv4"
+          },
+          {
+            "name": "BackendPoolIPv6"
+          }
+        ],
+        "inboundNatRules": [
+          {
+            "name": "SSHv4",
+            "properties": {
+              "frontendIPConfiguration": {
+
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers',concat(variables('lbName'), copyindex())),'/frontendIPConfigurations/LoadBalancerFrontEndIPv4')]"
+              },
+              "protocol": "tcp",
+              "frontendPort": 22,
+              "backendPort": 22,
+              "enableFloatingIP": false
+            }
+          },
+          {
+            "name": "SSHv6",
+            "properties": {
+              "frontendIPConfiguration": {
+
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers',concat(variables('lbName'), copyindex())),'/frontendIPConfigurations/LoadBalancerFrontEndIPv6')]"
+              },
+              "protocol": "tcp",
+              "frontendPort": 22,
+              "backendPort": 22,
+              "enableFloatingIP": false
+            }
+          },
+          {
+            "name": "80v4",
+            "properties": {
+              "frontendIPConfiguration": {
+
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers',concat(variables('lbName'), copyindex())),'/frontendIPConfigurations/LoadBalancerFrontEndIPv4')]"
+              },
+              "protocol": "tcp",
+              "frontendPort": 80,
+              "backendPort": 80,
+              "enableFloatingIP": false
+            }
+          },
+          {
+            "name": "80v6",
+            "properties": {
+              "frontendIPConfiguration": {
+
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers',concat(variables('lbName'), copyindex())),'/frontendIPConfigurations/LoadBalancerFrontEndIPv6')]"
+              },
+              "protocol": "tcp",
+              "frontendPort": 80,
+              "backendPort": 80,
+              "enableFloatingIP": false
+            }
+          }
+        ],
+        "loadBalancingRules": [
+        ],
+        "probes": [
+          {
+            "name": "[variables('ipv4ipv6lbProbeName')]",
+            "properties": {
+              "protocol": "Tcp",
+              "port": 80,
+              "intervalInSeconds": 5,
+              "numberOfProbes": 2
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('ipv4PublicIPAddressName'), copyindex())]",
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('ipv6PublicIPAddressName'), copyindex())]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(variables('vmNamePrefix'), copyindex())]",
+      "apiVersion": "2016-04-30-preview",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "virtualMachineLoop",
+        "count": "[parameters('numberOfInstances')]"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_DS11_v2"
+        },
+        "osProfile": {
+          "computerName": "[concat(variables('vmNamePrefix'), copyIndex())]",
+          "adminUsername": "[variables('adminUsername')]",
+          "adminPassword": "[variables('adminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "OpenLogic",
+            "offer": "CentOS",
+            "sku": "6.8",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "[concat(variables('vmNamePrefix'), copyindex(), 'OSdisk',uniqueString(resourceGroup().id))]",
+            "createOption": "FromImage"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('nicNamePrefix'),copyindex()))]"
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkInterfaces/', variables('nicNamePrefix'), copyindex())]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(variables('vmNamePrefix'), copyIndex(),'/','all.sh')]",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2015-06-15",
+      "copy": {
+        "name": "vmExtenstionLoop",
+        "count": "[parameters('numberOfInstances')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmNamePrefix'), copyIndex())]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Azure.Extensions",
+        "type": "CustomScript",
+        "typeHandlerVersion": "2.0",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "fileUris": [
+            "https://raw.githubusercontent.com/Teodelas/azure-lab/master/linuxipv6config.sh"
+          ],
+          "commandToExecute": "sh linuxipv6config.sh"
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "XREoutput": {
+      "type": "string",
+      "value": "[concat('output')]"
+    }
+  }
+}
