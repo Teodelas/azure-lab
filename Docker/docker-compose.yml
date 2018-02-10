@@ -1,6 +1,7 @@
 
 version: '2'
 #re: Default bridge network does not provide name resolution
+#docker-compose creates a user define bridge network
 services:
   azure-vote-back:
     image: redis
@@ -12,6 +13,7 @@ services:
     image: teodelas/azure-vote-front
     container_name: azure-vote-front
     environment:
+      #to pass environment variables with docker run, use -e REDIS='azure-vote-back'
       REDIS: azure-vote-back
     ports:
         - "8080:80"
