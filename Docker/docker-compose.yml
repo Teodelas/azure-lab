@@ -1,4 +1,6 @@
+
 version: '2'
+#re: Default bridge network does not provide name resolution
 services:
   azure-vote-back:
     image: redis
