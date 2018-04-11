@@ -1,0 +1,241 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "sqlusername": {
+      "type": "securestring"
+    },
+    "sqlpassword": {
+      "type": "securestring"
+    },
+    "publisherEmail": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "The email address of the owner of the service"
+      }
+    },
+    "publisherName": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "The name of the owner of the service"
+      }
+    },
+    "logicapppolicy": {
+      "type": "string",
+      "metadata": {
+        "description": "Operation policy XML."
+      }
+    },
+    "authorizationEndpoint": {
+      "type": "string",
+      "metadata": {
+        "description": "Get this from your AAD or STS"
+      }
+    },
+    "tokenEndpoint": {
+      "type": "string",
+      "metadata": {
+        "description": "Get this from your AAD or STS"
+      }
+    },
+    "clientid": {
+      "type": "string",
+      "metadata": {
+        "description": "Get this from your AAD or STS"
+      }
+    },
+    "clientsecret": {
+      "type": "string",
+      "metadata": {
+        "description": "Get this from your AAD or STS"
+      }
+    }
+
+
+  },
+    "variables": {
+      "apiManagementServiceName": "[concat('apiservice', uniqueString(resourceGroup().id))]",
+      "logicappname": "[concat('logicapp', uniqueString(resourceGroup().id))]",
+      "logicappsql": "[concat('sql', uniqueString(resourceGroup().id))]",
+      "hostingPlanName": "[concat('hostingplan', uniqueString(resourceGroup().id))]",
+      "sqlserverName": "[concat('sqlserver', uniqueString(resourceGroup().id))]",
+      "databaseName": "AuditLogDB",
+      "sku": "Developer",
+      "skuCount": "1",
+      "oauth2name":  "APIMOAuth2"
+    },
+    "resources": [
+      {
+        "name": "[variables('sqlserverName')]",
+        "type": "Microsoft.Sql/servers",
+        "location": "[resourceGroup().location]",
+        "apiVersion": "2014-04-01-preview",
+        "dependsOn": [],
+        "tags": {
+          "displayName": "wtwdemo"
+        },
+        "properties": {
+          "administratorLogin": "[parameters('sqlusername')]",
+          "administratorLoginPassword": "[parameters('sqlpassword')]"
+        },
+        "resources": [
+          {
+            "name": "AllowAllWindowsAzureIps",
+            "type": "firewallrules",
+            "location": "[resourceGroup().location]",
+            "apiVersion": "2014-04-01-preview",
+            "dependsOn": [
+              "[resourceId('Microsoft.Sql/servers', variables('sqlserverName'))]"
+            ],
+            "properties": {
+              "startIpAddress": "0.0.0.0",
+              "endIpAddress": "0.0.0.0"
+            }
+          },
+          {
+            "name": "[variables('databaseName')]",
+            "type": "databases",
+            "location": "[resourceGroup().location]",
+            "apiVersion": "2014-04-01-preview",
+            "dependsOn": [
+              "[resourceId('Microsoft.Sql/servers', variables('sqlserverName'))]"
+            ],
+            "tags": {
+              "displayName": "wtwdemo"
+            },
+            "properties": {
+              "collation": "SQL_Latin1_General_CP1_CI_AS",
+              "edition": "Basic",
+              "maxSizeBytes": "1073741824"
+            }
+          }
+        ]
+      },
+      {
+        "apiVersion": "2017-03-01",
+        "name": "[variables('apiManagementServiceName')]",
+        "type": "Microsoft.ApiManagement/service",
+        "location": "[resourceGroup().location]",
+        "tags": {},
+        "sku": {
+          "name": "[variables('sku')]",
+          "capacity": "[variables('skuCount')]"
+        },
+        "properties": {
+          "publisherEmail": "[parameters('publisherEmail')]",
+          "publisherName": "[parameters('publisherName')]"
+        },
+        "resources": [
+          {
+            "apiVersion": "2017-03-01",
+            "type": "apis",
+            "name": "logic-app",
+            "dependsOn": [
+              "[concat('Microsoft.ApiManagement/service/', variables('apiManagementServiceName'))]",
+              "[variables('oauth2name')]"
+            ],
+            "properties": {
+              "displayName": "logic-app",
+              "description": "Description for example API",
+              "serviceUrl": "http://example.com",
+              "path": "",
+              "protocols": [
+                "https"
+              ],
+              "authenticationSettings": {
+                "oAuth2": {
+                  "authorizationServerId": "[variables('oauth2name')]",
+                  "socpe": null
+                },
+                "openid": null
+              },
+              "subscriptionKeyParameterNames": {
+                "header": "Ocp-Apim-Subscription-Key",
+                "query": "subscription-key"
+              }
+            },
+            "resources": [
+              {
+                "apiVersion": "2017-03-01",
+                "type": "operations",
+                "name": "logicAppPost",
+                "dependsOn": [
+                  "[concat('Microsoft.ApiManagement/service/', variables('apiManagementServiceName'), '/apis/logic-app')]"
+                ],
+                "properties": {
+                  "displayName": "Post to Logic App",
+                  "method": "POST",
+                  "urlTemplate": "/",
+                  "description": "A demonstration of a GET call"
+                },
+                "resources": [
+                  {
+                    "apiVersion": "2018-01-01",
+                    "type": "policies",
+                    "name": "policy",
+                    "dependsOn": [
+                      "[concat('Microsoft.ApiManagement/service/', variables('apiManagementServiceName'))]",
+                      "[concat('Microsoft.ApiManagement/service/', variables('apiManagementServiceName'), '/apis/logic-app')]",
+                      "[concat('Microsoft.ApiManagement/service/', variables('apiManagementServiceName'), '/apis/logic-app/operations/logicAppPost')]"
+                    ],
+                    "properties": {
+                      "contentFormat": "xml-link",
+                      "policyContent": "[parameters('LogicAppPolicy')]"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "authorizationServers",
+            "name": "[variables('oauth2name')]",
+            "apiVersion": "2017-03-01",
+            "scale": null,
+            "properties": {
+              "displayName": "[variables('oauth2name')]",
+              "description": null,
+              "clientRegistrationEndpoint": "http://localhost",
+              "authorizationEndpoint": "[parameters('authorizationEndpoint')]",
+              "authorizationMethods": [
+                "GET",
+                "POST"
+              ],
+              "clientAuthenticationMethod": [
+                "Body"
+              ],
+              "tokenBodyParameters": [
+                {
+                  "name": "resource",
+                  "value": "c8af2ed7-082b-425d-aec7-863d6c8c3f87"
+                }
+              ],
+              "tokenEndpoint": "[parameters('tokenEndpoint')]",
+              "supportState": false,
+              "defaultScope": null,
+              "grantTypes": [
+                "authorizationCode"
+              ],
+              "bearerTokenSendingMethods": [
+                "authorizationHeader"
+              ],
+              "clientId": "[parameters('clientid')]",
+              "clientSecret": "[parameters('clientsecret')]",
+              "resourceOwnerUsername": null,
+              "resourceOwnerPassword": null
+            },
+            "dependsOn": [
+              "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementServiceName'))]"
+            ]
+          }
+        ]
+      },
+      {
+
+      }
+
+    ],
+    "outputs": {}
+  }
