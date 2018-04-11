@@ -55,187 +55,291 @@
 
 
   },
-    "variables": {
-      "apiManagementServiceName": "[concat('apiservice', uniqueString(resourceGroup().id))]",
-      "logicappname": "[concat('logicapp', uniqueString(resourceGroup().id))]",
-      "logicappsql": "[concat('sql', uniqueString(resourceGroup().id))]",
-      "hostingPlanName": "[concat('hostingplan', uniqueString(resourceGroup().id))]",
-      "sqlserverName": "[concat('sqlserver', uniqueString(resourceGroup().id))]",
-      "databaseName": "AuditLogDB",
-      "sku": "Developer",
-      "skuCount": "1",
-      "oauth2name":  "APIMOAuth2"
+  "variables": {
+    "apiManagementServiceName": "[concat('apiservice', uniqueString(resourceGroup().id))]",
+    "logicappname": "[concat('logicapp', uniqueString(resourceGroup().id))]",
+    "logicappsql": "[concat('sql', uniqueString(resourceGroup().id))]",
+    "hostingPlanName": "[concat('hostingplan', uniqueString(resourceGroup().id))]",
+    "sqlserverName": "[concat('sqlserver', uniqueString(resourceGroup().id))]",
+    "databaseName": "AuditLogDB",
+    "sku": "Developer",
+    "skuCount": "1",
+    "oauth2name": "APIMOAuth2"
+  },
+  "resources": [
+    {
+      "name": "[variables('sqlserverName')]",
+      "type": "Microsoft.Sql/servers",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2014-04-01-preview",
+      "dependsOn": [],
+      "tags": {
+        "displayName": "wtwdemo"
+      },
+      "properties": {
+        "administratorLogin": "[parameters('sqlusername')]",
+        "administratorLoginPassword": "[parameters('sqlpassword')]"
+      },
+      "resources": [
+        {
+          "name": "AllowAllWindowsAzureIps",
+          "type": "firewallrules",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2014-04-01-preview",
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers', variables('sqlserverName'))]"
+          ],
+          "properties": {
+            "startIpAddress": "0.0.0.0",
+            "endIpAddress": "0.0.0.0"
+          }
+        },
+        {
+          "name": "[variables('databaseName')]",
+          "type": "databases",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2014-04-01-preview",
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers', variables('sqlserverName'))]"
+          ],
+          "tags": {
+            "displayName": "wtwdemo"
+          },
+          "properties": {
+            "collation": "SQL_Latin1_General_CP1_CI_AS",
+            "edition": "Basic",
+            "maxSizeBytes": "1073741824"
+          }
+        }
+      ]
     },
-    "resources": [
-      {
-        "name": "[variables('sqlserverName')]",
-        "type": "Microsoft.Sql/servers",
-        "location": "[resourceGroup().location]",
-        "apiVersion": "2014-04-01-preview",
-        "dependsOn": [],
-        "tags": {
-          "displayName": "wtwdemo"
-        },
-        "properties": {
-          "administratorLogin": "[parameters('sqlusername')]",
-          "administratorLoginPassword": "[parameters('sqlpassword')]"
-        },
-        "resources": [
-          {
-            "name": "AllowAllWindowsAzureIps",
-            "type": "firewallrules",
-            "location": "[resourceGroup().location]",
-            "apiVersion": "2014-04-01-preview",
-            "dependsOn": [
-              "[resourceId('Microsoft.Sql/servers', variables('sqlserverName'))]"
-            ],
-            "properties": {
-              "startIpAddress": "0.0.0.0",
-              "endIpAddress": "0.0.0.0"
-            }
-          },
-          {
-            "name": "[variables('databaseName')]",
-            "type": "databases",
-            "location": "[resourceGroup().location]",
-            "apiVersion": "2014-04-01-preview",
-            "dependsOn": [
-              "[resourceId('Microsoft.Sql/servers', variables('sqlserverName'))]"
-            ],
-            "tags": {
-              "displayName": "wtwdemo"
-            },
-            "properties": {
-              "collation": "SQL_Latin1_General_CP1_CI_AS",
-              "edition": "Basic",
-              "maxSizeBytes": "1073741824"
-            }
-          }
-        ]
+    {
+      "apiVersion": "2017-03-01",
+      "name": "[variables('apiManagementServiceName')]",
+      "type": "Microsoft.ApiManagement/service",
+      "location": "[resourceGroup().location]",
+      "tags": {},
+      "sku": {
+        "name": "[variables('sku')]",
+        "capacity": "[variables('skuCount')]"
       },
-      {
-        "apiVersion": "2017-03-01",
-        "name": "[variables('apiManagementServiceName')]",
-        "type": "Microsoft.ApiManagement/service",
-        "location": "[resourceGroup().location]",
-        "tags": {},
-        "sku": {
-          "name": "[variables('sku')]",
-          "capacity": "[variables('skuCount')]"
-        },
-        "properties": {
-          "publisherEmail": "[parameters('publisherEmail')]",
-          "publisherName": "[parameters('publisherName')]"
-        },
-        "resources": [
-          {
-            "apiVersion": "2017-03-01",
-            "type": "apis",
-            "name": "logic-app",
-            "dependsOn": [
-              "[concat('Microsoft.ApiManagement/service/', variables('apiManagementServiceName'))]",
-              "[variables('oauth2name')]"
+      "properties": {
+        "publisherEmail": "[parameters('publisherEmail')]",
+        "publisherName": "[parameters('publisherName')]"
+      },
+      "resources": [
+        {
+          "apiVersion": "2017-03-01",
+          "type": "apis",
+          "name": "logic-app",
+          "dependsOn": [
+            "[concat('Microsoft.ApiManagement/service/', variables('apiManagementServiceName'))]",
+            "[variables('oauth2name')]"
+          ],
+          "properties": {
+            "displayName": "logic-app",
+            "description": "Description for example API",
+            "serviceUrl": "http://example.com",
+            "path": "",
+            "protocols": [
+              "https"
             ],
-            "properties": {
-              "displayName": "logic-app",
-              "description": "Description for example API",
-              "serviceUrl": "http://example.com",
-              "path": "",
-              "protocols": [
-                "https"
-              ],
-              "authenticationSettings": {
-                "oAuth2": {
-                  "authorizationServerId": "[variables('oauth2name')]",
-                  "socpe": null
-                },
-                "openid": null
+            "authenticationSettings": {
+              "oAuth2": {
+                "authorizationServerId": "[variables('oauth2name')]",
+                "socpe": null
               },
-              "subscriptionKeyParameterNames": {
-                "header": "Ocp-Apim-Subscription-Key",
-                "query": "subscription-key"
-              }
+              "openid": null
             },
-            "resources": [
-              {
-                "apiVersion": "2017-03-01",
-                "type": "operations",
-                "name": "logicAppPost",
-                "dependsOn": [
-                  "[concat('Microsoft.ApiManagement/service/', variables('apiManagementServiceName'), '/apis/logic-app')]"
-                ],
-                "properties": {
-                  "displayName": "Post to Logic App",
-                  "method": "POST",
-                  "urlTemplate": "/",
-                  "description": "A demonstration of a GET call"
-                },
-                "resources": [
-                  {
-                    "apiVersion": "2018-01-01",
-                    "type": "policies",
-                    "name": "policy",
-                    "dependsOn": [
-                      "[concat('Microsoft.ApiManagement/service/', variables('apiManagementServiceName'))]",
-                      "[concat('Microsoft.ApiManagement/service/', variables('apiManagementServiceName'), '/apis/logic-app')]",
-                      "[concat('Microsoft.ApiManagement/service/', variables('apiManagementServiceName'), '/apis/logic-app/operations/logicAppPost')]"
-                    ],
-                    "properties": {
-                      "contentFormat": "xml-link",
-                      "policyContent": "[parameters('LogicAppPolicy')]"
-                    }
-                  }
-                ]
-              }
-            ]
+            "subscriptionKeyParameterNames": {
+              "header": "Ocp-Apim-Subscription-Key",
+              "query": "subscription-key"
+            }
           },
-          {
-            "type": "authorizationServers",
-            "name": "[variables('oauth2name')]",
-            "apiVersion": "2017-03-01",
-            "scale": null,
-            "properties": {
-              "displayName": "[variables('oauth2name')]",
-              "description": null,
-              "clientRegistrationEndpoint": "http://localhost",
-              "authorizationEndpoint": "[parameters('authorizationEndpoint')]",
-              "authorizationMethods": [
-                "GET",
-                "POST"
+          "resources": [
+            {
+              "apiVersion": "2017-03-01",
+              "type": "operations",
+              "name": "logicAppPost",
+              "dependsOn": [
+                "[concat('Microsoft.ApiManagement/service/', variables('apiManagementServiceName'), '/apis/logic-app')]"
               ],
-              "clientAuthenticationMethod": [
-                "Body"
-              ],
-              "tokenBodyParameters": [
+              "properties": {
+                "displayName": "Post to Logic App",
+                "method": "POST",
+                "urlTemplate": "/",
+                "description": "A demonstration of a GET call"
+              },
+              "resources": [
                 {
-                  "name": "resource",
-                  "value": "c8af2ed7-082b-425d-aec7-863d6c8c3f87"
+                  "apiVersion": "2018-01-01",
+                  "type": "policies",
+                  "name": "policy",
+                  "dependsOn": [
+                    "[concat('Microsoft.ApiManagement/service/', variables('apiManagementServiceName'))]",
+                    "[concat('Microsoft.ApiManagement/service/', variables('apiManagementServiceName'), '/apis/logic-app')]",
+                    "[concat('Microsoft.ApiManagement/service/', variables('apiManagementServiceName'), '/apis/logic-app/operations/logicAppPost')]"
+                  ],
+                  "properties": {
+                    "contentFormat": "xml-link",
+                    "policyContent": "[parameters('LogicAppPolicy')]"
+                  }
                 }
-              ],
-              "tokenEndpoint": "[parameters('tokenEndpoint')]",
-              "supportState": false,
-              "defaultScope": null,
-              "grantTypes": [
-                "authorizationCode"
-              ],
-              "bearerTokenSendingMethods": [
-                "authorizationHeader"
-              ],
-              "clientId": "[parameters('clientid')]",
-              "clientSecret": "[parameters('clientsecret')]",
-              "resourceOwnerUsername": null,
-              "resourceOwnerPassword": null
+              ]
+            }
+          ]
+        },
+        {
+          "type": "authorizationServers",
+          "name": "[variables('oauth2name')]",
+          "apiVersion": "2017-03-01",
+          "scale": null,
+          "properties": {
+            "displayName": "[variables('oauth2name')]",
+            "description": null,
+            "clientRegistrationEndpoint": "http://localhost",
+            "authorizationEndpoint": "[parameters('authorizationEndpoint')]",
+            "authorizationMethods": [
+              "GET",
+              "POST"
+            ],
+            "clientAuthenticationMethod": [
+              "Body"
+            ],
+            "tokenBodyParameters": [
+              {
+                "name": "resource",
+                "value": "c8af2ed7-082b-425d-aec7-863d6c8c3f87"
+              }
+            ],
+            "tokenEndpoint": "[parameters('tokenEndpoint')]",
+            "supportState": false,
+            "defaultScope": null,
+            "grantTypes": [
+              "authorizationCode"
+            ],
+            "bearerTokenSendingMethods": [
+              "authorizationHeader"
+            ],
+            "clientId": "[parameters('clientid')]",
+            "clientSecret": "[parameters('clientsecret')]",
+            "resourceOwnerUsername": null,
+            "resourceOwnerPassword": null
+          },
+          "dependsOn": [
+            "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementServiceName'))]"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Microsoft.Logic/workflows",
+      "apiVersion": "2016-06-01",
+      "name": "[variables('logicAppName')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/connections', variables('logicappsql'))]",
+        "[resourceId('Microsoft.Sql/servers', variables('sqlserverName'))]",
+        "[concat('Microsoft.ApiManagement/service/',variables('apiManagementServiceName'))]"
+      ],
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "definition": {
+          "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "$connections": {
+              "defaultValue": {},
+              "type": "Object"
+            }
+          },
+          "triggers": {
+            "manual": {
+              "type": "Request",
+              "kind": "Http",
+              "inputs": {
+                "method": "POST",
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "sqlquery": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "actions": {
+            "Execute_a_SQL_query": {
+              "runAfter": {},
+              "type": "ApiConnection",
+              "inputs": {
+                "body": {
+                  "query": "EXECUTE AS USER = '@{triggerBody()?['id']}';\n @{triggerBody()?['sqlquery']}"
+                },
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['sql']['connectionId']"
+                  }
+                },
+                "method": "post",
+                "path": "/datasets/default/query/sql"
+              }
             },
-            "dependsOn": [
-              "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementServiceName'))]"
-            ]
+            "Response": {
+              "runAfter": {
+                "Execute_a_SQL_query": [
+                  "Succeeded"
+                ]
+              },
+              "type": "Response",
+              "inputs": {
+                "body": "@body('Execute_a_SQL_query')?['resultsets']",
+                "statusCode": 200
+              }
+            }
+          },
+          "outputs": {}
+        },
+        "parameters": {
+          "$connections": {
+            "value": {
+              "sql": {
+                "id": "[concat(subscription().id,'/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/sql')]",
+                "connectionId": "[resourceId('Microsoft.Web/connections', variables('logicappsql'))]"
+              }
+            }
           }
-        ]
-      },
-      {
-
+        }
       }
-
-    ],
-    "outputs": {}
+    },
+    {
+      "type": "Microsoft.Web/connections",
+      "apiVersion": "2016-06-01",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [],
+      "name": "[variables('logicappsql')]",
+      "properties": {
+        "api": {
+          "id": "[concat(subscription().id,'/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/sql')]"
+        },
+        "displayName": "[variables('logicappsql')]",
+        "parameterValues": {
+          "server": "[concat(variables('sqlserverName'),'.database.windows.net')]",
+          "database": "[variables('databaseName')]",
+          "username": "[parameters('sqlusername')]",
+          "password": "[parameters('sqlpassword')]"
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "logicappurl": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Logic/workflows',variables('logicAppName'))).accessEndpoint]"
+    }
   }
+}
