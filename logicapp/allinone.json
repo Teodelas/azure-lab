@@ -339,7 +339,7 @@
   "outputs": {
     "logicappurl": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.Logic/workflows',variables('logicAppName'))).accessEndpoint]"
+      "value": "[reference(concat('Microsoft.Logic/workflows',variables('logicAppName'))).accessEndpoint]"
     }
   }
 }
