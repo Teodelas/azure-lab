@@ -162,6 +162,7 @@
               "type": "operations",
               "name": "logicAppPost",
               "dependsOn": [
+                "[concat('Microsoft.ApiManagement/service/', variables('apiManagementServiceName'))]",
                 "[concat('Microsoft.ApiManagement/service/', variables('apiManagementServiceName'), '/apis/logic-app')]"
               ],
               "properties": {
@@ -194,6 +195,7 @@
           "type": "products",
           "name": "Starter",
           "dependsOn": [
+            "[concat('Microsoft.ApiManagement/service/', variables('apiManagementServiceName'), '/apis/logic-app')]",
             "[concat('Microsoft.ApiManagement/service/', variables('apiManagementServiceName'))]"
           ],
           "properties": {
