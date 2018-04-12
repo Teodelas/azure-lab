@@ -339,7 +339,11 @@
   "outputs": {
     "logicappurl": {
       "type": "string",
-      "value": "[reference(concat('Microsoft.Logic/workflows',variables('logicAppName'))).accessEndpoint]"
+      "value": "[reference(concat('Microsoft.Logic/workflows/',variables('logicAppName'))).accessEndpoint]"
+    },
+    "oauth2callbackurl": {
+      "type": "string",
+      "value": "[concat(reference(concat('Microsoft.ApiManagement/service/', variables('apiManagementServiceName'))).portalUrl, '/docs/services/', variables('oauth2name'), '/console/oauth2/authorizationcode/callback')]"
     }
   }
 }
