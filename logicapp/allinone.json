@@ -1,4 +1,4 @@
- {
+{
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
@@ -186,6 +186,54 @@
                   }
                 }
               ]
+            }
+          ]
+        },
+        {
+          "apiVersion": "2017-03-01",
+          "type": "products",
+          "name": "Starter",
+          "dependsOn": [
+            "[concat('Microsoft.ApiManagement/service/', variables('apiManagementServiceName'))]"
+          ],
+          "properties": {
+            "displayName": "Starter",
+            "description": "Description...",
+            "terms": "Terms for example product",
+            "subscriptionRequired": true,
+            "approvalRequired": false,
+            "subscriptionsLimit": 1,
+            "state": "published"
+          },
+          "resources": [
+            {
+              "apiVersion": "2017-03-01",
+              "type": "apis",
+              "name": "logic-app",
+              "dependsOn": [
+                "[concat('Microsoft.ApiManagement/service/', variables('apiManagementServiceName'), '/products/Starter')]"
+              ],
+              "properties": {
+                "displayName": "logic-app",
+                "description": "Description for example API",
+                "serviceUrl": "http://example.com",
+                "path": "",
+                "protocols": [
+                  "https"
+                ],
+                "authenticationSettings": {
+                  "oAuth2": {
+                    "authorizationServerId": "[variables('oauth2name')]",
+                    "socpe": null
+                  },
+                  "openid": null
+                },
+                "subscriptionKeyParameterNames": {
+                  "header": "Ocp-Apim-Subscription-Key",
+                  "query": "subscription-key"
+                }
+              }
+
             }
           ]
         },
