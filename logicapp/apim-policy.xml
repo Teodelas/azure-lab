@@ -15,7 +15,7 @@
         <set-header name="Authorization" exists-action="delete" />
         <set-body>@{
 JObject response = context.Request.Body.As&lt;JObject&gt;();
-response.Add(\&quot;id\&quot;,\&quot;f71dc6148f05407ab42d5471dc1a50f8\&quot;);
+response.Add(&quot;id&quot;,&quot;f71dc6148f05407ab42d5471dc1a50f8&quot;);
 return response.ToString(Newtonsoft.Json.Formatting.None);         
        }</set-body>
     </inbound>
