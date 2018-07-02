@@ -8,5 +8,9 @@ sudo systemctl start docker
 cd azure-lab
 git pull
 cd azure-vote-demo 
-docker build . 
+docker build -t azure-vote:v2 .
+docker images
+docker run -p 80:80 -d azure-vote:v2
+docker ps
+
 
