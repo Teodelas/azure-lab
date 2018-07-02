@@ -13,7 +13,7 @@ RUN  pip install redis
 
 EXPOSE 2222 80
  
-ADD     /azure-vote
+ADD     /azure-vote /app
 
 ENV PORT 80
 ENV PATH ${PATH}:/home/site/wwwroot
