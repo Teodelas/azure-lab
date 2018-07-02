@@ -12,5 +12,13 @@ docker build -t azure-vote:v2 .
 docker images
 docker run -p 80:80 -d azure-vote:v2
 docker ps
+#Verify that the python app is working
+curl 
+
+#Deploy the full stack
+docker-compose up -d
+
+#cleanup
+docker rm $(docker ps -aq)
 
 
