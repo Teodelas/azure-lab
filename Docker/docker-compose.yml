@@ -1,5 +1,6 @@
 
-version: '2'
+#Will work with Azure app service as well
+version: '3'
 #re: Default bridge network does not provide name resolution
 #docker-compose creates a user define bridge network
 services:
