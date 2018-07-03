@@ -12,7 +12,7 @@ RUN  mkdir -p /home/LogFiles \
 RUN  pip install redis
 
 EXPOSE 80
- 
+
 ADD     /azure-vote /app
 
 ENV PORT 80

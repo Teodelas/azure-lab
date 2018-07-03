@@ -7,6 +7,14 @@ ssh teodelas@teolinuxvm.eastus.cloudapp.azure.com
 sudo systemctl start docker
 cd azure-lab
 git pull
+
+#Demo simple python app
+cd Docker
+docker build 
+docker build . -t simpleapp
+#Flask default port is 5000
+docker run -p 5000:5000 -d
+
 cd azure-vote-demo 
 docker build -t azure-vote:v2 .
 docker images
@@ -19,6 +27,7 @@ curl
 docker-compose up -d
 
 #cleanup
+docker stop $(docker ps -aq)
 docker rm $(docker ps -aq)
 
 
