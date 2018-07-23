@@ -10,18 +10,20 @@ git pull
 
 #Demo simple python app
 cd Docker
-docker build 
 docker build . -t simpleapp
 #Flask default port is 5000
 docker run -p 5000:5000 -d
+#Verify that the python app is working
+curl http://teolinuxvm.eastus.cloudapp.azure.com:5000
+
+#put the app in a repo
+docker login
+docker tag 440f5043522b docker.io/teodelas/simpleapp
+docker push docker.io/teodelas/simpleapp
 
 cd azure-vote-demo 
 docker build -t azure-vote:v2 .
 docker images
-docker run -p 80:80 -d azure-vote:v2
-docker ps
-#Verify that the python app is working
-curl 
 
 #Deploy the full stack
 docker-compose up -d
