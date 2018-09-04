@@ -2,6 +2,10 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "imageID": {
+      "type": "string",
+      "minLength": 1
+    },
     "hackstorageType": {
       "type": "string",
       "defaultValue": "Standard_LRS",
@@ -196,7 +200,7 @@
         "description": "Name of configuration to SQL"
       }
     },
-    "vmSSName": "reg2",
+    "vmSSName": "IISVMSS",
     "publicIPAddressID": "[resourceId('Microsoft.Network/publicIPAddresses',variables('hackathonPublicIPName'))]",
     "appGwName": "appGw",
     "appGwID": "[resourceId('Microsoft.Network/applicationGateways',variables('appGwName'))]",
@@ -213,16 +217,16 @@
       "type": "Microsoft.Network/applicationGateways",
       "name": "[variables('appGwName')]",
       "location": "[resourceGroup().location]",
-      "apiVersion": "2016-03-30",
+      "apiVersion": "2017-06-01",
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/','hackathonVnet')]",
         "[concat('Microsoft.Network/publicIPAddresses/', variables('hackathonPublicIPName'))]"
       ],
       "properties": {
         "sku": {
-          "name": "Standard_Large",
+          "name": "Standard_Small",
           "tier": "Standard",
-          "capacity": "10"
+          "capacity": "1"
         },
         "gatewayIPConfigurations": [
           {
@@ -263,7 +267,11 @@
             "properties": {
               "Port": "[variables('appGwBackendPort')]",
               "Protocol": "Http",
-              "CookieBasedAffinity": "Disabled"
+              "CookieBasedAffinity": "Disabled",
+              "ProbeEnabled": "true",
+              "Probe": {
+                "id": "[concat(variables('appGwID'), '/probes/Status')]"
+              }
             }
           }
         ],
@@ -298,6 +306,20 @@
               }
             }
           }
+        ],
+        "probes": [
+          {
+            "Name": "Status",
+            "properties": {
+              "Protocol": "http",
+              "Path": "/status",
+              "Host": "127.0.0.1",
+              "Interval": "30",
+              "Timeout": "30",
+              "UnhealthyThreshold": "3",
+              "MinServers": "0"
+            }
+          }
         ]
       }
     },
@@ -329,10 +351,7 @@
               "createOption": "FromImage"
             },
             "imageReference": {
-              "publisher": "[variables('hackathonVMImagePublisher')]",
-              "offer": "[variables('hackathonVMImageOffer')]",
-              "sku": "[parameters('hackathonVMWindowsOSVersion')]",
-              "version": "latest"
+              "id": "[parameters('imageID')]"
             }
           },
           "osProfile": {
@@ -366,81 +385,6 @@
             ]
           },
           "extensionProfile": {
-            "extensions": [
-              {
-                "name": "hackathonDSC",
-                "properties": {
-                  "publisher": "Microsoft.Powershell",
-                  "type": "DSC",
-                  "typeHandlerVersion": "2.19",
-                  "autoUpgradeMinorVersion": true,
-                  "protectedSettings": {
-                    "Items": {
-                      "registrationKeyPrivate": "[parameters('registrationKey')]"
-                    }
-                  },
-                  "settings": {
-                    "modulesUrl": "https://cloudworkshop.blob.core.windows.net/arm-hackathon/RegistrationMetaConfigV2.zip",
-                    "configurationFunction": "RegistrationMetaConfigV2.ps1\\RegistrationMetaConfigV2",
-                    "Properties": [
-                      {
-                        "Name": "RegistrationKey",
-                        "Value": {
-                          "UserName": "PLACEHOLDER_DONOTUSE",
-                          "Password": "PrivateSettingsRef:registrationKeyPrivate"
-                        },
-                        "TypeName": "System.Management.Automation.PSCredential"
-                      },
-                      {
-                        "Name": "RegistrationUrl",
-                        "Value": "[parameters('registrationUrl')]",
-                        "TypeName": "System.String"
-                      },
-                      {
-                        "Name": "NodeConfigurationName",
-                        "Value": "CloudShopWeb.WebServer",
-                        "TypeName": "System.String"
-                      },
-                      {
-                        "Name": "ConfigurationMode",
-                        "Value": "[parameters('configurationMode')]",
-                        "TypeName": "System.String"
-                      },
-                      {
-                        "Name": "ConfigurationModeFrequencyMins",
-                        "Value": "[parameters('configurationModeFrequencyMins')]",
-                        "TypeName": "System.Int32"
-                      },
-                      {
-                        "Name": "RefreshFrequencyMins",
-                        "Value": "[parameters('refreshFrequencyMins')]",
-                        "TypeName": "System.Int32"
-                      },
-                      {
-                        "Name": "RebootNodeIfNeeded",
-                        "Value": "[parameters('rebootNodeIfNeeded')]",
-                        "TypeName": "System.Boolean"
-                      },
-                      {
-                        "Name": "ActionAfterReboot",
-                        "Value": "[parameters('actionAfterReboot')]",
-                        "TypeName": "System.String"
-                      },
-                      {
-                        "Name": "AllowModuleOverwrite",
-                        "Value": "[parameters('allowModuleOverwrite')]",
-                        "TypeName": "System.Boolean"
-                      },
-                      {
-                        "Name": "Timestamp",
-                        "Value": "[parameters('timestamp')]",
-                        "TypeName": "System.String"
-                      }
-                    ]
-                  }
-                }
-              }
-            ]
           }
         }
       }
@@ -633,90 +577,7 @@
           ]
         }
       },
-      "resources": [
-        {
-          "name": "Microsoft.Powershell.DSC",
-          "type": "extensions",
-          "location": "[resourceGroup().location]",
-          "apiVersion": "2016-03-30",
-          "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines', parameters('hackathonSqlVMName'))]"
-          ],
-          "tags": {
-            "displayName": "hackathonDSCSQL"
-          },
-          "properties": {
-            "publisher": "Microsoft.Powershell",
-            "type": "DSC",
-            "typeHandlerVersion": "2.76",
-            "autoUpgradeMinorVersion": false,
-            "settings": {
-              "modulesUrl": "https://cloudworkshop.blob.core.windows.net/arm-hackathon/RegistrationMetaConfigV2.zip",
-              "configurationFunction": "RegistrationMetaConfigV2.ps1\\RegistrationMetaConfigV2",
-              "Properties": [
-                {
-                  "Name": "RegistrationKey",
-                  "Value": {
-                    "UserName": "PLACEHOLDER_DONOTUSE",
-                    "Password": "PrivateSettingsRef:registrationKeyPrivate"
-                  },
-                  "TypeName": "System.Management.Automation.PSCredential"
-                },
-                {
-                  "Name": "RegistrationUrl",
-                  "Value": "[parameters('registrationUrl')]",
-                  "TypeName": "System.String"
-                },
-                {
-                  "Name": "NodeConfigurationName",
-                  "Value": "[parameters('sqlnodeConfigurationName')]",
-                  "TypeName": "System.String"
-                },
-                {
-                  "Name": "ConfigurationMode",
-                  "Value": "[parameters('configurationMode')]",
-                  "TypeName": "System.String"
-                },
-                {
-                  "Name": "ConfigurationModeFrequencyMins",
-                  "Value": "[parameters('configurationModeFrequencyMins')]",
-                  "TypeName": "System.Int32"
-                },
-                {
-                  "Name": "RefreshFrequencyMins",
-                  "Value": "[parameters('refreshFrequencyMins')]",
-                  "TypeName": "System.Int32"
-                },
-                {
-                  "Name": "RebootNodeIfNeeded",
-                  "Value": "[parameters('rebootNodeIfNeeded')]",
-                  "TypeName": "System.Boolean"
-                },
-                {
-                  "Name": "ActionAfterReboot",
-                  "Value": "[parameters('actionAfterReboot')]",
-                  "TypeName": "System.String"
-                },
-                {
-                  "Name": "AllowModuleOverwrite",
-                  "Value": "[parameters('allowModuleOverwrite')]",
-                  "TypeName": "System.Boolean"
-                },
-                {
-                  "Name": "Timestamp",
-                  "Value": "[parameters('timestamp')]",
-                  "TypeName": "System.String"
-                }
-              ]
-            },
-            "protectedSettings": {
-              "Items": {
-                "registrationKeyPrivate": "[parameters('registrationKey')]"
-              }
-            }
-          }
-        }
-      ]
+      "resources": [  ]
     }
   ],
   "outputs": {}

@@ -55,6 +55,9 @@
     },
     "instanceCount": {
       "value": "2"
+    },
+    "imageID": {
+      "value": "/subscriptions/fed7f475-6055-4e3c-8529-c1345df70589/resourceGroups/IMAGES/providers/Microsoft.Compute/images/WS2016IIS-Base"
     }
   }
 }

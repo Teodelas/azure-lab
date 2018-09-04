@@ -358,7 +358,7 @@
       },
       "properties": {
         "upgradePolicy": {
-          "mode": "Manual"
+          "mode": "Rolling"
         },
         "virtualMachineProfile": {
           "storageProfile": {
