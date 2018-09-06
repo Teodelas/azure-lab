@@ -7,6 +7,6 @@ app = Flask(__name__)
 @app.route('/')
 def hello():
     return 'Hello World! \n'
-#re: Flask runs on port 5000
+#re: Flask runs on port 5000 by default
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", debug=True)
+    app.run(host="0.0.0.0", port=80)

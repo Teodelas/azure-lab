@@ -1,0 +1,1 @@
+re: Docker containers cannot communicate by default.  Docker-Compose puts them on the same namespace

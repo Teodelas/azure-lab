@@ -1,0 +1,30 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "clusterName": {
+      "value": "teoasfdemo"
+    },
+    "adminUsername": {
+      "value": "teodelas"
+    },
+    "adminPassword": {
+      "value": "Password.12345"
+    },
+    "certificateThumbprint": {
+      "value": "4FDD92D1CC6CDC1A0B9E8D896C003B24E5C367D6"
+    },
+    "sourceVaultResourceId": {
+      "value": "/subscriptions/fed7f475-6055-4e3c-8529-c1345df70589/resourceGroups/Azure_Demos/providers/Microsoft.KeyVault/vaults/teodemokv"
+    },
+    "certificateUrlValue": {
+      "value": "https://teodemokv.vault.azure.net:443/secrets/teoasfdemo3/6654be2bb61c4cf1973800873eb045fc"
+    },
+    "subnetID": {
+      "value": "/subscriptions/fed7f475-6055-4e3c-8529-c1345df70589/resourceGroups/ASF/providers/Microsoft.Network/virtualNetworks/asfvnet/subnets/default"
+    },
+    "subnetPrefix": {
+      "value": "10.3.0.0/24"
+    }
+  }
+}
