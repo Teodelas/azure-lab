@@ -3,3 +3,11 @@
 ################################################################################
 
 /.vs
+/ASF/.vs/ASF-existing-vnet/DesignTimeBuild/.dtbcache
+/VS Code/APIs/.vs/demoapi/v15/Server/sqlite3
+/VS Code/APIs/.vs/demoapi/v15/.suo
+*.lock
+*.ide-shm
+*.ide
+*.ide-wal
+*.suo

@@ -1,0 +1,15 @@
+C:\Users\teodelas\source\repos\azure-lab\VS Code\APIs\demoapi\bin\Release\netcoreapp2.1\demoapi.deps.json
+C:\Users\teodelas\source\repos\azure-lab\VS Code\APIs\demoapi\bin\Release\netcoreapp2.1\demoapi.runtimeconfig.json
+C:\Users\teodelas\source\repos\azure-lab\VS Code\APIs\demoapi\bin\Release\netcoreapp2.1\demoapi.runtimeconfig.dev.json
+C:\Users\teodelas\source\repos\azure-lab\VS Code\APIs\demoapi\bin\Release\netcoreapp2.1\demoapi.dll
+C:\Users\teodelas\source\repos\azure-lab\VS Code\APIs\demoapi\bin\Release\netcoreapp2.1\demoapi.pdb
+C:\Users\teodelas\source\repos\azure-lab\VS Code\APIs\demoapi\obj\Release\netcoreapp2.1\demoapi.csprojAssemblyReference.cache
+C:\Users\teodelas\source\repos\azure-lab\VS Code\APIs\demoapi\obj\Release\netcoreapp2.1\demoapi.csproj.CoreCompileInputs.cache
+C:\Users\teodelas\source\repos\azure-lab\VS Code\APIs\demoapi\obj\Release\netcoreapp2.1\demoapi.RazorAssemblyInfo.cache
+C:\Users\teodelas\source\repos\azure-lab\VS Code\APIs\demoapi\obj\Release\netcoreapp2.1\demoapi.RazorAssemblyInfo.cs
+C:\Users\teodelas\source\repos\azure-lab\VS Code\APIs\demoapi\obj\Release\netcoreapp2.1\UserSecretsAssemblyInfo.cs
+C:\Users\teodelas\source\repos\azure-lab\VS Code\APIs\demoapi\obj\Release\netcoreapp2.1\demoapi.AssemblyInfoInputs.cache
+C:\Users\teodelas\source\repos\azure-lab\VS Code\APIs\demoapi\obj\Release\netcoreapp2.1\demoapi.AssemblyInfo.cs
+C:\Users\teodelas\source\repos\azure-lab\VS Code\APIs\demoapi\obj\Release\netcoreapp2.1\demoapi.RazorTargetAssemblyInfo.cache
+C:\Users\teodelas\source\repos\azure-lab\VS Code\APIs\demoapi\obj\Release\netcoreapp2.1\demoapi.dll
+C:\Users\teodelas\source\repos\azure-lab\VS Code\APIs\demoapi\obj\Release\netcoreapp2.1\demoapi.pdb
