@@ -1,0 +1,11 @@
+C:\Users\teodelas\source\repos\azure-lab\ASB\ASBConsoleApp\bin\Debug\netcoreapp2.1\ASBConsoleApp.deps.json
+C:\Users\teodelas\source\repos\azure-lab\ASB\ASBConsoleApp\bin\Debug\netcoreapp2.1\ASBConsoleApp.runtimeconfig.json
+C:\Users\teodelas\source\repos\azure-lab\ASB\ASBConsoleApp\bin\Debug\netcoreapp2.1\ASBConsoleApp.runtimeconfig.dev.json
+C:\Users\teodelas\source\repos\azure-lab\ASB\ASBConsoleApp\bin\Debug\netcoreapp2.1\ASBConsoleApp.dll
+C:\Users\teodelas\source\repos\azure-lab\ASB\ASBConsoleApp\obj\Debug\netcoreapp2.1\ASBConsoleApp.csprojAssemblyReference.cache
+C:\Users\teodelas\source\repos\azure-lab\ASB\ASBConsoleApp\obj\Debug\netcoreapp2.1\ASBConsoleApp.csproj.CoreCompileInputs.cache
+C:\Users\teodelas\source\repos\azure-lab\ASB\ASBConsoleApp\obj\Debug\netcoreapp2.1\ASBConsoleApp.AssemblyInfoInputs.cache
+C:\Users\teodelas\source\repos\azure-lab\ASB\ASBConsoleApp\obj\Debug\netcoreapp2.1\ASBConsoleApp.AssemblyInfo.cs
+C:\Users\teodelas\source\repos\azure-lab\ASB\ASBConsoleApp\bin\Debug\netcoreapp2.1\ASBConsoleApp.pdb
+C:\Users\teodelas\source\repos\azure-lab\ASB\ASBConsoleApp\obj\Debug\netcoreapp2.1\ASBConsoleApp.dll
+C:\Users\teodelas\source\repos\azure-lab\ASB\ASBConsoleApp\obj\Debug\netcoreapp2.1\ASBConsoleApp.pdb
